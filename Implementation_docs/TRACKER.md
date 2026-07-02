@@ -15,7 +15,7 @@ new phase until the previous one is approved by the user.
 | Phase | Title | Status | Progress |
 |---|---|---|---|
 | 0 | Repository Bootstrap & Planning | DONE | 100% |
-| 1 | Foundations: Contracts, Config, LLM + Deterministic Fallback | NOT STARTED | 0% |
+| 1 | Foundations: Contracts, Config, LLM + Deterministic Fallback | DONE | 100% |
 | 2 | LangGraph Reasoning Pipeline (→ WAIT_FOR_HUMAN) | NOT STARTED | 0% |
 | 3 | Human-in-the-Loop: Intent, Approve/Modify/Unsupported, Mock Execution | NOT STARTED | 0% |
 | 4 | Platform Integration: FastAPI, Router, Watcher, Sessions | NOT STARTED | 0% |
@@ -50,26 +50,34 @@ new phase until the previous one is approved by the user.
 
 ## Phase 1 — Foundations: Data Contracts, Config, LLM + Deterministic Fallback
 
-- **Status:** NOT STARTED
-- **Progress:** 0%
+- **Status:** DONE (reviewed and approved; committed as Phase 1)
+- **Progress:** 100%
 - **Deliverables:**
-  - [ ] Backend package skeleton per `system_architecture.md` §8
-  - [ ] `data/runtime/*` + `data/fixtures/expected_outputs/` + `data/templates/` (with `.gitkeep`)
-  - [ ] `schemas/`: meeting_package, operations_package, approval_package, workflow_state, events
-  - [ ] `core/common/`: config, logging, ids, json_io, paths
-  - [ ] `core/llm/`: base, ollama_provider, fallback_provider, client (retry + validation)
-  - [ ] Fixture validation (both packages parse)
-  - [ ] `pytest` unit tests (schemas, config, fallback, retry)
+  - [x] Backend package skeleton per `system_architecture.md` §8 (17 packages + root `conftest.py`)
+  - [x] `data/runtime/*` + `data/fixtures/expected_outputs/` + `data/templates/` (with `.gitkeep`)
+  - [x] `schemas/`: enums, meeting_package, **hiring_tracker**, artifacts, operations_package, approval_package, workflow_state, events, `_time`
+  - [x] `core/common/`: config, logging, ids, json_io, paths
+  - [x] `core/llm/`: base, ollama_provider, fallback_provider, client (retry + validation)
+  - [x] Data-contract validation — **all three `data/` files** parse (2 Meeting Packages + `hiring_tracker.json`)
+  - [x] `pytest` unit tests (schemas, config, fallback, retry) — **16 passed**
+  - [x] Dependencies installed into `.venv`; `requirements.lock` frozen (81 pins)
 - **Checklist:**
-  - [ ] Schemas cover §8.1, §8.2, and full WorkflowState (§14.1)
-  - [ ] Both fixtures validate; malformed rejected
-  - [ ] Config maps all `.env.example` keys; `LLM_MODE` ∈ {cloud, fallback}
-  - [ ] Fallback provider produces valid structured output offline
-  - [ ] Validator rejects bad output → retry
-  - [ ] Folder structure matches §8
-  - [ ] `pytest` green
+  - [x] Schemas cover §8.1, §8.2, and full WorkflowState (§14.1, 17 keys)
+  - [x] Both fixtures validate; malformed rejected
+  - [x] `hiring_tracker.json` validates against `HiringTracker`
+  - [x] Config maps all `.env.example` keys; `LLM_MODE` ∈ {cloud, fallback}
+  - [x] Fallback provider produces valid structured output offline (no network)
+  - [x] Validator rejects bad output → retry with error fed back (§15)
+  - [x] Folder structure matches §8
+  - [x] `pytest` green; `ruff check` clean
 - **Blockers:** None
-- **Notes:**
+- **Notes:** Schema-first: hiring artifact models defined in `schemas/artifacts.py`
+  now (Phase 2 `agents/hiring/models.py` re-exports + adds node logic).
+  `candidate_profile/` PDFs are reference-only (no PDF dependency; "Resume"
+  evidence sources from `payload.candidate` in Phase 2). Optional live-Ollama
+  smoke (`LLM_MODE=cloud`) also run live and **passed** (raw call + structured
+  path; the §15 retry loop self-corrected a real malformed field), confirming
+  the `/v1` path end to end.
 
 ---
 
@@ -173,3 +181,4 @@ new phase until the previous one is approved by the user.
 | Date | Phase | Change |
 |---|---|---|
 | 2026-07-02 | 0 | Planning + bootstrap complete; tracker initialized; all implementation phases NOT STARTED. |
+| 2026-07-03 | 1 | Foundations implemented: schemas (incl. `HiringTracker` for the mock ATS), config, common utils, LLM client + deterministic fallback; deps installed + locked; 16 tests pass, ruff clean; all 3 `data/` files validate. Status IN REVIEW pending user sign-off. |
