@@ -1,0 +1,105 @@
+{
+  "schema_version": "1.0",
+  "domain": "hiring",
+  "metadata": {
+    "meeting_id": "mtg-2026-0701-meera",
+    "title": "Northwind AI - Lead AI Engineer - R2 Technical + System Design - Meera Krishnan",
+    "meeting_type": "interview",
+    "started_at": "2026-07-01T11:00:00",
+    "duration_minutes": 60,
+    "platform": "mock"
+  },
+  "participants": [
+    { "name": "Priya Nair", "role": "interviewer", "title": "Principal AI Engineer" },
+    { "name": "Marcus Bell", "role": "interviewer", "title": "Staff Engineer (System Design)" },
+    { "name": "Meera Krishnan", "role": "candidate", "title": "Senior AI Engineer @ BrightPath Software" }
+  ],
+  "transcript": [
+    { "turn_index": 1, "speaker": "Priya Nair", "timestamp": "00:00:10", "text": "Hi Meera, thanks for making the time. I'm Priya, Principal AI Engineer, and Marcus here is our Staff Engineer for system design. This round is about 60 minutes of technical depth, a design exercise, and some discussion on leading delivery. Ready when you are." },
+    { "turn_index": 2, "speaker": "Meera Krishnan", "timestamp": "00:00:40", "text": "Thanks Priya, happy to be here. I'm a Senior AI Engineer at BrightPath, about four years in, mostly building RAG systems and LLM-powered search and support tools." },
+    { "turn_index": 3, "speaker": "Priya Nair", "timestamp": "00:01:00", "text": "Great. Walk me through the most complex multi-agent system you've built and how you orchestrated it." },
+    { "turn_index": 4, "speaker": "Meera Krishnan", "timestamp": "00:01:30", "text": "The main one is a customer-support assistant. It's a RAG pipeline - retrieval over our docs in a vector store, then an LLM that can call a few tools like ticket lookup and order status. It handles a good chunk of tier-1 tickets, so I'd call it our multi-agent support system." },
+    { "turn_index": 5, "speaker": "Marcus Bell", "timestamp": "00:02:20", "text": "Just to be precise - was that several agents coordinating, or a single agent calling tools? Have you orchestrated multiple agents that hand off to each other?" },
+    { "turn_index": 6, "speaker": "Meera Krishnan", "timestamp": "00:02:50", "text": "Fair - in production it's really one agent with tool calls. I prototyped a planner-and-executor split in a side project, but it never went to production. So multi-agent orchestration at scale is honestly newer territory for me." },
+    { "turn_index": 7, "speaker": "Priya Nair", "timestamp": "00:03:40", "text": "How did you evaluate quality on the support assistant?" },
+    { "turn_index": 8, "speaker": "Meera Krishnan", "timestamp": "00:04:05", "text": "That part I'm solid on. I built an offline eval set of a few hundred real queries with expected answers, ran LLM-as-judge for answer relevance and faithfulness, and tracked those metrics on every prompt change before shipping. It caught several regressions." },
+    { "turn_index": 9, "speaker": "Marcus Bell", "timestamp": "00:05:10", "text": "In production, how did you handle governance, auditability, and observability?" },
+    { "turn_index": 10, "speaker": "Meera Krishnan", "timestamp": "00:05:35", "text": "We logged requests and responses to a dashboard and had some latency and error metrics. We didn't really have formal compliance requirements, so there wasn't a structured audit trail or policy layer - I haven't worked much with things like NIST or model-risk frameworks." },
+    { "turn_index": 11, "speaker": "Marcus Bell", "timestamp": "00:06:40", "text": "Let's design. Sketch an agentic platform that automates first-round technical interview screening, end to end." },
+    { "turn_index": 12, "speaker": "Meera Krishnan", "timestamp": "00:07:15", "text": "Okay - I'd ingest the interview transcript and the candidate resume, chunk and embed them, then run a RAG step to pull the relevant parts against the job description. Then an LLM scores the candidate on a rubric and outputs a recommendation. I'd store results in a database and show them in a dashboard for the recruiter to review." },
+    { "turn_index": 13, "speaker": "Marcus Bell", "timestamp": "00:08:30", "text": "Where do human approvals and the downstream actions - emails, ATS updates, scheduling - fit? And how is the lifecycle managed?" },
+    { "turn_index": 14, "speaker": "Meera Krishnan", "timestamp": "00:08:55", "text": "I'd probably have the recruiter click approve in the dashboard before anything is sent, and then call the ATS and email APIs. I haven't designed that lifecycle in a lot of detail before - I'd want to think more about how the pieces coordinate." },
+    { "turn_index": 15, "speaker": "Marcus Bell", "timestamp": "00:09:50", "text": "What about failure modes - the model hallucinates or returns malformed output?" },
+    { "turn_index": 16, "speaker": "Meera Krishnan", "timestamp": "00:10:15", "text": "I'd add retries, and maybe a validation step to check the output format. If it's clearly wrong we'd fall back to a default or flag it. I'll admit I haven't formalized confidence thresholds or an escalation flow in production." },
+    { "turn_index": 17, "speaker": "Priya Nair", "timestamp": "00:11:20", "text": "Scale and cost for hundreds of concurrent sessions?" },
+    { "turn_index": 18, "speaker": "Meera Krishnan", "timestamp": "00:11:45", "text": "I'd add more workers behind a queue and cache the embeddings so we're not recomputing them. Beyond that - things like model tiering or backpressure - I know the terms but haven't had to tune a system at that scale myself." },
+    { "turn_index": 19, "speaker": "Priya Nair", "timestamp": "00:12:50", "text": "Tell me about leading a team or making a hard cross-team call." },
+    { "turn_index": 20, "speaker": "Meera Krishnan", "timestamp": "00:13:20", "text": "I led a two-engineer squad on the support-assistant feature - I planned the work and reviewed their PRs, and coordinated with one other team on the API. I haven't owned cross-organization contracts or led a larger group yet, but stepping up to that kind of leadership is exactly why I'm interested in a lead role." },
+    { "turn_index": 21, "speaker": "Marcus Bell", "timestamp": "00:14:30", "text": "A weakness or growth area you're working on?" },
+    { "turn_index": 22, "speaker": "Meera Krishnan", "timestamp": "00:14:55", "text": "Honestly, going deeper on true multi-agent orchestration and on production governance and observability. My depth is in RAG and evaluation; the agentic-platform and compliance side is where I most want to grow." },
+    { "turn_index": 23, "speaker": "Meera Krishnan", "timestamp": "00:15:40", "text": "One question from me - for someone stepping up into this lead role, what kind of ramp-up or mentorship would there be on the multi-agent and platform side?" },
+    { "turn_index": 24, "speaker": "Priya Nair", "timestamp": "00:16:30", "text": "Good question, and a fair one to ask. We'll take that into account. Thanks Meera - appreciate the candor, and we'll follow up on next steps." }
+  ],
+  "payload": {
+    "candidate": {
+      "name": "Meera Krishnan",
+      "current_title": "Senior AI Engineer",
+      "current_company": "BrightPath Software",
+      "years_experience": 4,
+      "location": "Bengaluru, India",
+      "skills": [
+        "Python", "RAG", "Prompt Engineering", "LangChain", "Fine-tuning",
+        "FAISS", "Vector Search", "LLM-as-judge Evaluation", "FastAPI"
+      ],
+      "education": [
+        "B.E. Computer Science, PES University, 2021"
+      ],
+      "highlights": [
+        "Built and shipped a production RAG-based customer-support assistant handling tier-1 tickets",
+        "Owns an offline LLM evaluation pipeline (LLM-as-judge) gating prompt changes",
+        "Led a 2-engineer feature squad"
+      ],
+      "links": { "linkedin": "https://www.linkedin.com/in/meera-krishnan-example" }
+    },
+    "role": {
+      "title": "Lead AI Engineer",
+      "level": "Lead",
+      "company": "Northwind AI",
+      "must_have_skills": [
+        "Multi-agent orchestration (LangGraph)",
+        "Production GenAI at scale",
+        "LLM evaluation pipelines",
+        "Technical leadership"
+      ],
+      "nice_to_have_skills": [
+        "FinServ compliance (NIST AI RMF / EU AI Act / SR 11-7)",
+        "MCP",
+        "Observability (OpenTelemetry)"
+      ],
+      "jd_highlights": [
+        "Own architecture and delivery of Northwind's multi-agent operations platform",
+        "Lead and grow a team of AI engineers",
+        "Set the standards for evaluation, governance, and observability"
+      ]
+    },
+    "tracker": {
+      "candidate_id": "cand-002-meera",
+      "current_stage": "Technical Interview (Round 2)",
+      "status": "In Progress",
+      "interview_round": 2,
+      "notes": "Cleared recruiter screen and R1. Strong RAG/evaluation background; applying up-level from Senior to Lead."
+    },
+    "interview": {
+      "round_name": "Technical + System Design (Round 2)",
+      "round_number": 2,
+      "total_rounds": 4,
+      "focus_areas": [
+        "Multi-agent orchestration",
+        "System design",
+        "Evaluation & governance",
+        "Technical leadership"
+      ],
+      "next_stage": "Hiring Manager / Final Round"
+    }
+  }
+}

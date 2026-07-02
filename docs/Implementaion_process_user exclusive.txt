@@ -1,0 +1,18 @@
+This doc is for monitoring how I am implementing this project. Don't use this file as a reference or edit it.
+
+Before starting development, I had multiple brainstorming sessions with ChatGPT to define the project scope, validate my understanding, discuss different architectural approaches, identify potential issues, and resolve my doubts. Once the overall direction was finalized, I asked it to generate detailed project documents that would act as the source of truth for implementation instead of relying on vague prompts during development.
+
+The generated documents were reviewed by me and cross-validated with another LLM. After several iterations and improvements, the final versions were approved. These include `product_requirements.md`, `system_architecture.md`, and `system_flow.md`, which together define the expected behavior, architecture, workflows, and implementation boundaries of the MVP.
+
+Link to the design discussion:
+https://chatgpt.com/share/6a461eea-6968-83ee-886f-676673e87417
+
+These finalized documents have been saved in the `docs/` folder at the root of the project. They serve as the primary reference for all future development decisions.
+
+The implementation follows an architecture-first approach. Instead of trying to build the application using one-shot prompts, Claude Code is used as the implementation agent. Every implementation step is driven by the approved documentation, allowing each phase to be reviewed before moving to the next. This keeps development structured, reduces ambiguity, and minimizes scope drift.
+
+The current phase is setting up the project foundation, including the folder structure, `.agent.md` files, development workflow, technology stack, and project scaffold. Once this foundation is finalized, development will proceed feature by feature according to the defined system.
+
+### Current Progress
+
+**Step 1:** Finalize the folder structure, project scope, technology stack, development workflow, and scaffold the project.

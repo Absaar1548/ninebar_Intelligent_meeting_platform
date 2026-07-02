@@ -1,0 +1,107 @@
+{
+  "schema_version": "1.0",
+  "domain": "hiring",
+  "metadata": {
+    "meeting_id": "mtg-2026-0630-absaar",
+    "title": "Northwind AI - Lead AI Engineer - R2 Technical + System Design - Absaar Ali",
+    "meeting_type": "interview",
+    "started_at": "2026-06-30T14:00:00",
+    "duration_minutes": 60,
+    "platform": "mock"
+  },
+  "participants": [
+    { "name": "Priya Nair", "role": "interviewer", "title": "Principal AI Engineer" },
+    { "name": "Marcus Bell", "role": "interviewer", "title": "Staff Engineer (System Design)" },
+    { "name": "Absaar Ali", "role": "candidate", "title": "Lead AI Engineer @ Coforge" }
+  ],
+  "transcript": [
+    { "turn_index": 1, "speaker": "Priya Nair", "timestamp": "00:00:10", "text": "Thanks for joining, Absaar. I'm Priya, Principal AI Engineer, and this is Marcus, our Staff Engineer who focuses on system design. This is the round-2 technical deep dive, about 60 minutes. We'll go into agentic systems, do some design on a whiteboard, and talk about how you lead delivery. Sound good?" },
+    { "turn_index": 2, "speaker": "Absaar Ali", "timestamp": "00:00:35", "text": "Sounds great, thanks Priya, and good to meet you Marcus. Happy to dig into any of it." },
+    { "turn_index": 3, "speaker": "Priya Nair", "timestamp": "00:00:50", "text": "Let's start broad. Walk me through the most complex multi-agent system you've built and how you actually orchestrated it." },
+    { "turn_index": 4, "speaker": "Absaar Ali", "timestamp": "00:01:20", "text": "The largest is an agentic SDLC automation platform for a major US financial institution. It targets a 25-agent fleet, with 7 agents live at MVP, all running on a shared LangGraph orchestration layer over Azure OpenAI, backed by a 13-server MCP infrastructure. Each unit of work is a graph thread with checkpointing, so runs are resumable and every step is auditable with 7-year WORM retention. I directed three of the eight workstreams: Input Validation, Context Assembly, and Governance/Security/Observability." },
+    { "turn_index": 5, "speaker": "Marcus Bell", "timestamp": "00:02:30", "text": "Thirteen MCP servers and a shared graph across eight workstreams. How did you stop the agents and teams from stepping on each other and prevent contract drift?" },
+    { "turn_index": 6, "speaker": "Absaar Ali", "timestamp": "00:03:05", "text": "We defined typed cross-workstream contracts up front: a Validated Request, a Context Bundle, a Policy Decision, and an AgentTrace/AuditEvent. Those became the only interfaces between workstreams, versioned with schema checks in CI so a breaking change failed the build. That single decision - locking the contracts before anyone wrote agent logic - is what prevented drift before we ever hit production." },
+    { "turn_index": 7, "speaker": "Priya Nair", "timestamp": "00:04:20", "text": "Context Assembly is usually where these systems fall over. How did you handle retrieval and the context window?" },
+    { "turn_index": 8, "speaker": "Absaar Ali", "timestamp": "00:04:55", "text": "I built a typed Context Assembly layer that orchestrates retrievers over Azure AI Search and a Neo4j knowledge graph, with ACL pre-filtering so an agent never even retrieves something the requesting identity can't see. Inside the 128k window I do token-budget eviction with a fixed priority order, and I keep the prompt prefix cache-stable so we get prompt-cache hits and deterministic ordering. That kept P95 latency under five seconds at 99.95% availability." },
+    { "turn_index": 9, "speaker": "Marcus Bell", "timestamp": "00:06:10", "text": "How did you know the agents were actually producing good output? What did evaluation look like?" },
+    { "turn_index": 10, "speaker": "Absaar Ali", "timestamp": "00:06:45", "text": "Two layers. Offline, a golden dataset with task-specific rubrics and LLM-as-judge scoring, gated in CI so quality regressions blocked a release. Online, every agent output is a structured, schema-validated object with a confidence score; anything below threshold is routed to a human instead of acted on. On HiringLens I used the same pattern to produce STRONG_HIRE / HIRE / CONSIDER / NO_HIRE recommendations from scoring, communication metrics, and proctoring flags." },
+    { "turn_index": 11, "speaker": "Priya Nair", "timestamp": "00:08:15", "text": "You were in financial services. How did compliance shape the architecture rather than just being bolted on?" },
+    { "turn_index": 12, "speaker": "Absaar Ali", "timestamp": "00:08:50", "text": "I introduced a Policy Decision Point abstraction so authorization and policy were a first-class step in the graph, plus an append-only audit projection. I authored the regulatory-mapping artifacts aligning the design to NIST AI RMF, the EU AI Act, and SR 11-7, and standardized OpenTelemetry GenAI telemetry across agents so every decision was traceable end to end. Compliance drove the control points; it wasn't an afterthought." },
+    { "turn_index": 13, "speaker": "Marcus Bell", "timestamp": "00:10:30", "text": "Let's design something. Sketch an agentic platform that automates first-round technical interview screening, end to end. Take the whiteboard." },
+    { "turn_index": 14, "speaker": "Absaar Ali", "timestamp": "00:11:10", "text": "I'll split it into a live layer and a reasoning layer. Live: a three-channel Socket.IO system - control, answer, and media - driving the interview lifecycle, with Azure Speech-to-Text for live transcription and concurrent proctoring using Face API plus pyannote speaker diarization. That produces a standardized package: transcript, candidate profile, role context. Reasoning: an evidence-first pipeline - extract quote-level evidence, then evaluate against the rubric, then derive a recommendation with confidence. Every external action - email, ATS update, scheduling - goes through a human approval gate via adapters, so nothing fires automatically. Deployment on AKS behind APIM, with Semaphore-based rate limiting to the model. I actually built a production version of this - HiringLens - at 90%-plus selection relevance." },
+    { "turn_index": 15, "speaker": "Marcus Bell", "timestamp": "00:13:40", "text": "Good. Now the model hallucinates or returns malformed output mid-run. What happens?" },
+    { "turn_index": 16, "speaker": "Absaar Ali", "timestamp": "00:14:10", "text": "Every model call requests a structured output validated against a JSON schema; on validation failure I retry with the error fed back, up to a bounded number of attempts. If it still fails, or confidence is below threshold, the item is escalated to a human rather than acted on. Side effects are idempotent and sit behind the approval gate, so a bad generation can never silently send an email or mutate the tracker. Where it makes sense I keep a deterministic fallback path." },
+    { "turn_index": 17, "speaker": "Priya Nair", "timestamp": "00:15:50", "text": "Scale and cost - hundreds of concurrent interviews. How do you keep it fast and affordable?" },
+    { "turn_index": 18, "speaker": "Absaar Ali", "timestamp": "00:16:25", "text": "Async orchestration end to end, and model tiering - small cheap models for routing, extraction, and classification, and the large model only for the final judgment step. Cache-stable prompts to hit the prompt cache, aggressive token budgeting, batching where latency allows, and backpressure so a spike degrades gracefully instead of falling over. That combination is what let the earlier platform hold P95 under five seconds economically." },
+    { "turn_index": 19, "speaker": "Priya Nair", "timestamp": "00:18:00", "text": "Switching gears to leadership. Tell me about a time you had to align people or make a hard call." },
+    { "turn_index": 20, "speaker": "Absaar Ali", "timestamp": "00:18:35", "text": "On the SDLC platform a stakeholder wanted to defer the governance and audit work to hit an earlier demo date. I pushed back, quantified the regulatory exposure under SR 11-7 and the rework cost of retrofitting audit later, and proposed a thin end-to-end slice that included the audit projection from day one. They agreed, and locking the contracts and telemetry standards early is a big part of why we avoided drift. Alongside that I mentored two engineers on the context and governance workstreams." },
+    { "turn_index": 21, "speaker": "Marcus Bell", "timestamp": "00:20:10", "text": "Anything you'd do differently, or a weakness you're actively working on?" },
+    { "turn_index": 22, "speaker": "Absaar Ali", "timestamp": "00:20:40", "text": "Early on I over-indexed on flexibility and left the agents too loosely coupled, which cost us time when interfaces shifted; the lesson was to lock typed contracts and telemetry up front, which I now do by default. The other thing I'm consciously working on is delegating more - as a lead I have to resist doing the hard integration myself and instead grow the team to own it." },
+    { "turn_index": 23, "speaker": "Absaar Ali", "timestamp": "00:22:00", "text": "A couple of questions from my side: how large is the team I'd be leading, what does the platform roadmap look like over the next few quarters, and how do you currently balance delivery velocity against governance and evaluation rigor?" },
+    { "turn_index": 24, "speaker": "Priya Nair", "timestamp": "00:23:30", "text": "Great questions - it's a team of five you'd grow, the roadmap is consolidating several point solutions onto one agentic platform, and honestly the governance-versus-velocity balance is exactly what we want this lead to own. That's about time. Thanks Absaar, this was a strong conversation and we'll be in touch on next steps." }
+  ],
+  "payload": {
+    "candidate": {
+      "name": "Absaar Ali",
+      "current_title": "Lead AI Engineer",
+      "current_company": "Coforge",
+      "years_experience": 2,
+      "location": "Delhi, India",
+      "skills": [
+        "Python", "TypeScript", "LangGraph", "Multi-Agent Systems", "LLM Orchestration",
+        "RAG", "Azure OpenAI (GPT-4o)", "MCP", "FastAPI", "Next.js", "PostgreSQL",
+        "Neo4j", "Azure AI Search", "OpenTelemetry", "Docker", "PyTorch"
+      ],
+      "education": [
+        "B.Tech Computer Science & Engineering (Minor: Machine Learning), Delhi Technological University, 2024"
+      ],
+      "highlights": [
+        "Directed 3 of 8 workstreams on a 25-agent SDLC automation platform (LangGraph + Azure OpenAI + 13-server MCP) for a major US financial institution",
+        "Built HiringLens AI, an end-to-end L1 interview automation platform (Next.js/FastAPI/GPT-4o) with 90%+ selection relevance",
+        "Winner, Miltos Petridis Memorial Trophy, SGAI International Conference on AI 2025",
+        "GATE DA 2025 - All India Rank 764"
+      ],
+      "links": { "linkedin": "https://www.linkedin.com/in/syed-absaar-ali" }
+    },
+    "role": {
+      "title": "Lead AI Engineer",
+      "level": "Lead",
+      "company": "Northwind AI",
+      "must_have_skills": [
+        "Multi-agent orchestration (LangGraph)",
+        "Production GenAI at scale",
+        "LLM evaluation pipelines",
+        "Technical leadership"
+      ],
+      "nice_to_have_skills": [
+        "FinServ compliance (NIST AI RMF / EU AI Act / SR 11-7)",
+        "MCP",
+        "Observability (OpenTelemetry)"
+      ],
+      "jd_highlights": [
+        "Own architecture and delivery of Northwind's multi-agent operations platform",
+        "Lead and grow a team of AI engineers",
+        "Set the standards for evaluation, governance, and observability"
+      ]
+    },
+    "tracker": {
+      "candidate_id": "cand-001-absaar",
+      "current_stage": "Technical Interview (Round 2)",
+      "status": "In Progress",
+      "interview_round": 2,
+      "notes": "Cleared recruiter screen and R1 (coding). Strong resume in agentic AI and LLM orchestration."
+    },
+    "interview": {
+      "round_name": "Technical + System Design (Round 2)",
+      "round_number": 2,
+      "total_rounds": 4,
+      "focus_areas": [
+        "Multi-agent orchestration",
+        "System design",
+        "Evaluation & governance",
+        "Technical leadership"
+      ],
+      "next_stage": "Hiring Manager / Final Round"
+    }
+  }
+}

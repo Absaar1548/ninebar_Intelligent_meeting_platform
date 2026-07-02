@@ -1,0 +1,45 @@
+{
+  "_note": "Mock ATS / hiring tracker. The Hiring agent reads this for context and proposes updates that are applied on approval (Milestone 6). Records align with agents/hiring/models.py TrackerContext.",
+  "role": {
+    "title": "Lead AI Engineer",
+    "level": "Lead",
+    "company": "Northwind AI",
+    "pipeline_stages": [
+      "Recruiter Screen",
+      "Technical Interview (Round 1)",
+      "Technical Interview (Round 2)",
+      "Hiring Manager / Final Round",
+      "Offer"
+    ]
+  },
+  "candidates": [
+    {
+      "candidate_id": "cand-001-absaar",
+      "name": "Absaar Ali",
+      "role_applied": "Lead AI Engineer",
+      "current_stage": "Technical Interview (Round 2)",
+      "status": "In Progress",
+      "interview_round": 2,
+      "notes": "Cleared recruiter screen and R1 (coding). Strong resume in agentic AI and LLM orchestration.",
+      "history": [
+        { "stage": "Recruiter Screen", "outcome": "Passed", "date": "2026-06-18" },
+        { "stage": "Technical Interview (Round 1)", "outcome": "Passed", "date": "2026-06-24" },
+        { "stage": "Technical Interview (Round 2)", "outcome": "Pending", "date": "2026-06-30" }
+      ]
+    },
+    {
+      "candidate_id": "cand-002-meera",
+      "name": "Meera Krishnan",
+      "role_applied": "Lead AI Engineer",
+      "current_stage": "Technical Interview (Round 2)",
+      "status": "In Progress",
+      "interview_round": 2,
+      "notes": "Cleared recruiter screen and R1. Strong RAG/evaluation background; applying up-level from Senior to Lead.",
+      "history": [
+        { "stage": "Recruiter Screen", "outcome": "Passed", "date": "2026-06-19" },
+        { "stage": "Technical Interview (Round 1)", "outcome": "Passed", "date": "2026-06-25" },
+        { "stage": "Technical Interview (Round 2)", "outcome": "Pending", "date": "2026-07-01" }
+      ]
+    }
+  ]
+}
