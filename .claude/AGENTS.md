@@ -118,3 +118,28 @@ Unsupported requests should be rejected with an explanation instead of attemptin
 * Do not implement functionality outside the approved scope.
 
 The objective is to implement the agreed architecture—not redesign it.
+
+---
+
+# Implementation Workflow
+
+This section governs how implementation proceeds. It is appended to the
+permanent guidelines above and does not replace any of them.
+
+* **Always read the project documentation before implementation.** Read
+  `docs/product_requirements.md`, `docs/system_architecture.md`, and
+  `docs/system_flow.md` first, and treat them as immutable specifications.
+* **Always consult `Implementation_docs/MASTER_IMPLEMENTATION.md`** before
+  starting work. It is the engineering source of truth for phases,
+  dependencies, risks, and validation.
+* **Always update `Implementation_docs/TRACKER.md`** as work progresses —
+  update status, progress, checklists, blockers, and notes at every work
+  session and phase boundary.
+* **Implement one approved phase at a time.** Do not begin a phase before its
+  dependencies (per the dependency graph) are complete.
+* **Wait for explicit user approval before starting the next phase.** Finish a
+  phase, run its validation checklist, update the tracker, then stop and wait.
+* **Never redesign the architecture.** Node names, node order, folder
+  structure, and data contracts are fixed by the source documents.
+* **Ask if implementation reveals ambiguity.** Raise a question instead of
+  making an architectural decision.

@@ -1,0 +1,43 @@
+# ==========================================================================
+# Hiring Operations Agent MVP — Python dependencies
+#
+# Stack fixed by docs/system_architecture.md §9 (Technology Stack).
+# Do NOT add libraries that introduce architectural change; this MVP
+# mocks infrastructure only.
+#
+# NOTE: versions are minimum-compatible lower bounds. Exact pins are
+# frozen during Phase 1 (`pip freeze > requirements.lock`) after the
+# first successful install. Target runtime: Python 3.12.
+# ==========================================================================
+
+# --- API framework (Backend gateway) --------------------------------------
+fastapi>=0.115,<1.0
+uvicorn[standard]>=0.30,<1.0
+
+# --- Workflow engine (orchestration + state + interrupt/resume) -----------
+langgraph>=0.2.50
+langchain-core>=0.3,<0.4          # message/typing utilities used by LangGraph
+
+# --- LLM client (Ollama Cloud API) + fallback transport -------------------
+ollama>=0.4.0                     # official client; supports structured (schema) outputs
+httpx>=0.27                       # OpenAI-compatible /v1 calls, health probes, timeouts
+
+# --- Data contracts / validation (schema-first) ---------------------------
+pydantic>=2.9,<3.0
+pydantic-settings>=2.5,<3.0       # typed config loaded from .env
+python-dotenv>=1.0                # .env loading for local dev
+
+# --- Templating (renderer: markdown / email / tracker proposals) ----------
+jinja2>=3.1,<4.0
+
+# --- File monitoring (runtime/input watcher — Event Bus stand-in) ---------
+watchdog>=5.0
+
+# --- Logging / console rendering ------------------------------------------
+rich>=13.9
+
+# --- Presentation (Teams chat simulation) ---------------------------------
+gradio>=4.44,<6.0
+
+# --- Development / testing (not required at runtime) ----------------------
+pytest>=8.3

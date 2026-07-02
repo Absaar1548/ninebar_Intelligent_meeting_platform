@@ -1,0 +1,105 @@
+# ==========================================================================
+# Hiring Operations Agent MVP — .gitignore
+# Covers: Python, FastAPI, Gradio, LangGraph, VS Code, PyCharm
+# ==========================================================================
+
+# --- Secrets / local environment -----------------------------------------
+.env
+.env.*
+!.env.example
+
+# --- Python ---------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# --- Virtual environments -------------------------------------------------
+.venv/
+venv/
+env/
+ENV/
+.python-version
+
+# --- Testing / coverage ---------------------------------------------------
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+
+# --- FastAPI / Uvicorn ----------------------------------------------------
+*.pid
+*.sock
+
+# --- Gradio ---------------------------------------------------------------
+.gradio/
+gradio_cached_examples/
+flagged/
+
+# --- LangGraph / LangChain ------------------------------------------------
+.langgraph_api/
+.langgraph/
+*.sqlite
+*.sqlite3
+checkpoints/
+
+# --- Runtime working data (generated at runtime, not source) --------------
+# Fixtures and templates are tracked; live runtime artifacts are not.
+data/runtime/input/*
+data/runtime/processing/*
+data/runtime/operations/*
+data/runtime/approvals/*
+data/runtime/completed/*
+data/runtime/logs/*
+!data/runtime/**/.gitkeep
+
+# --- Logs -----------------------------------------------------------------
+*.log
+logs/
+
+# --- VS Code --------------------------------------------------------------
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# --- PyCharm / JetBrains --------------------------------------------------
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# --- OS -------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Jupyter --------------------------------------------------------------
+.ipynb_checkpoints/
