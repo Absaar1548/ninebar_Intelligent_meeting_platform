@@ -68,6 +68,9 @@ class HiringSessionService:
     def start_from_package(self, mp: MeetingPackage) -> SessionResult:
         session_id = session_id_for(mp.meeting_id)
         log.info("starting hiring session %s", session_id)
+        # Register up front so the session is queryable (GET) while the pipeline
+        # runs — the UI polls it for live per-node progress.
+        self._registry.upsert(session_id, mp.meeting_id, WorkflowStage.CREATED)
         snap = run_to_interrupt(mp, thread_id=session_id)
         return self._finalize(snap, session_id, mp.meeting_id)
 

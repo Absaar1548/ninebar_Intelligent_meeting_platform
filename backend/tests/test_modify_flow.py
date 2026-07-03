@@ -3,8 +3,11 @@ downstream only, and return to WAIT_FOR_HUMAN (§7.14, §12)."""
 
 from __future__ import annotations
 
+from backend.agents.hiring.nodes.base import revision_for
+from backend.agents.hiring.prompts.reasoning import draft_generation_prompt
 from backend.agents.hiring.workflow import resume, run_to_interrupt
-from backend.schemas.enums import ApprovalStatus, Intent, WorkflowStage
+from backend.schemas.artifacts import ActionPlan, Decision, InterviewContext
+from backend.schemas.enums import ApprovalStatus, Intent, Recommendation, WorkflowStage
 from backend.tests.conftest import load_meeting
 
 
@@ -45,3 +48,27 @@ def test_modify_then_approve_completes():
     snap = resume("approve", thread_id="t-mod-approve")
     assert snap.next == ()
     assert snap.values["workflow_stage"] == WorkflowStage.COMPLETED
+
+
+# --- the reviewer's instruction must reach the regenerating node -----------
+def test_revision_targets_only_the_resume_node():
+    state = {"modification_target": "draft_generation",
+             "human_feedback": "say the next round is in person at the Gurgaon office"}
+    assert revision_for(state, "draft_generation") == state["human_feedback"]
+    # downstream / non-target nodes must NOT re-apply the raw request
+    assert revision_for(state, "action_planning") is None
+    assert revision_for({}, "draft_generation") is None  # initial pass
+
+
+def test_draft_prompt_embeds_the_revision():
+    decision = Decision(recommendation=Recommendation.HOLD, confidence=0.5,
+                        reasoning="x", evidence_refs=[])
+    ctx = InterviewContext(interview_stage="R2", candidate_name="A",
+                           role_title="Lead AI Engineer", role_level="Lead",
+                           meeting_objective="deep dive")
+    prompt = draft_generation_prompt(
+        ActionPlan(), decision, ctx,
+        revision="next round is in person at the Gurgaon office",
+    )
+    assert "Gurgaon" in prompt
+    assert "reviewer requested" in prompt.lower()

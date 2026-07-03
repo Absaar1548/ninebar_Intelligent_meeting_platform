@@ -1,0 +1,7 @@
+**Mock execution:** {{ report.status }}
+
+| Adapter | Result | Detail |
+|---|---|---|
+{% for r in report.results %}
+| {{ r.adapter }} | {{ "ok" if r.ok else "FAIL" }} | {{ r.detail }} |
+{% endfor %}

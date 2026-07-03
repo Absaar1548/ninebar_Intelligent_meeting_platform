@@ -3,7 +3,11 @@ Modification resume entry point (e.g. "rewrite email") in Phase 3."""
 
 from __future__ import annotations
 
-from backend.agents.hiring.nodes.base import get_llm_client, with_message
+from backend.agents.hiring.nodes.base import (
+    get_llm_client,
+    revision_for,
+    with_message,
+)
 from backend.agents.hiring.prompts.base import SYSTEM_PROMPT
 from backend.agents.hiring.prompts.reasoning import draft_generation_prompt
 from backend.agents.hiring.services.fallbacks import fallback_drafts
@@ -17,8 +21,9 @@ def draft_generation_node(state: WorkflowState) -> dict:
     action_plan = state["action_plan"]
     decision = state["decision"]
     ctx = state["interview_context"]
+    revision = revision_for(state, "draft_generation")
     drafts = get_llm_client().generate_structured(
-        draft_generation_prompt(action_plan, decision, ctx),
+        draft_generation_prompt(action_plan, decision, ctx, revision=revision),
         Drafts,
         system=SYSTEM_PROMPT,
         fallback_fn=lambda: fallback_drafts(mp, decision, action_plan),

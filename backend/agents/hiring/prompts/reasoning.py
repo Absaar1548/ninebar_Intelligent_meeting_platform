@@ -26,6 +26,18 @@ from backend.schemas.artifacts import (
 from backend.schemas.meeting_package import MeetingPackage
 
 
+def _revision_note(revision: str | None) -> str:
+    """Instruction appended when a Modification re-enters at this node — makes
+    the regeneration apply the human's specific request, not just re-draft."""
+    if not revision:
+        return ""
+    return (
+        "\n\nIMPORTANT — the human reviewer requested the following change; apply "
+        "it faithfully and keep everything else consistent with the evidence and "
+        f'the decision:\n"{revision.strip()}"'
+    )
+
+
 def context_analysis_prompt(mp: MeetingPackage) -> str:
     return build_user_prompt(
         "Analyze the hiring context. Understanding only — no judgement, no "
@@ -88,11 +100,13 @@ def operational_assessment_prompt(
 
 
 def decision_synthesis_prompt(
-    assessment: Assessment, findings: Findings, graph: EvidenceGraph
+    assessment: Assessment, findings: Findings, graph: EvidenceGraph,
+    revision: str | None = None,
 ) -> str:
     return build_user_prompt(
         "Synthesize the hiring decision. Choose recommendation from the schema "
-        "enum only. Provide reasoning and evidence_refs grounded in the graph.",
+        "enum only. Provide reasoning and evidence_refs grounded in the graph."
+        + _revision_note(revision),
         {
             "Assessment": assessment.model_dump_json(),
             "Findings": findings.model_dump_json(),
@@ -103,11 +117,13 @@ def decision_synthesis_prompt(
 
 
 def action_planning_prompt(
-    decision: Decision, assessment: Assessment, ctx: InterviewContext
+    decision: Decision, assessment: Assessment, ctx: InterviewContext,
+    revision: str | None = None,
 ) -> str:
     return build_user_prompt(
         "Translate the decision into concrete operational tasks (action items). "
-        "Use only the action-type enum values in the schema.",
+        "Use only the action-type enum values in the schema."
+        + _revision_note(revision),
         {
             "Decision": decision.model_dump_json(),
             "Assessment": assessment.model_dump_json(),
@@ -118,11 +134,13 @@ def action_planning_prompt(
 
 
 def draft_generation_prompt(
-    action_plan: ActionPlan, decision: Decision, ctx: InterviewContext
+    action_plan: ActionPlan, decision: Decision, ctx: InterviewContext,
+    revision: str | None = None,
 ) -> str:
     return build_user_prompt(
         "Generate the human-consumable draft communications: a candidate email "
-        "and a tracker update proposal consistent with the action plan.",
+        "and a tracker update proposal consistent with the action plan."
+        + _revision_note(revision),
         {
             "Action Plan": action_plan.model_dump_json(),
             "Decision": decision.model_dump_json(),

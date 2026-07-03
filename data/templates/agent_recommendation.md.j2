@@ -1,0 +1,27 @@
+{{ ap.executive_summary }}
+
+**Recommendation:** {{ ap.recommendation | replace("_", " ") | upper }} · **Confidence:** {{ "%.0f"|format(ap.confidence * 100) }}%
+
+**Why this call:** {{ ap.decision.reasoning }}
+
+**Proposed actions**
+{% for a in ap.action_items %}
+- {{ a.type | replace("_", " ") }} — {{ a.description }}
+{% else %}
+- _None._
+{% endfor %}
+{% if ap.draft_email %}
+
+**Draft email** → {{ ap.draft_email.to }} · _{{ ap.draft_email.subject }}_
+
+{{ ap.draft_email.body }}
+{% endif %}
+
+**Evidence cited**
+{% for e in ap.evidence %}
+- `{{ e.evidence_id }}`{{ ' — “%s”'|format(e.quote) if e.quote else '' }}
+{% else %}
+- _No evidence cited._
+{% endfor %}
+
+_Reply **approve** to execute, or ask me to modify (e.g. "rewrite the email", "change the recommendation", "remove the tracker update")._

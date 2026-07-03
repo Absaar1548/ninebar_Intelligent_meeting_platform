@@ -1,0 +1,401 @@
+{
+  "meeting_id": "mtg-2026-0701-meera",
+  "generated_at": "2026-07-03T09:58:02.087533Z",
+  "context_analysis": {
+    "interview_stage": "Technical + System Design (Round 2)",
+    "candidate_name": "Meera Krishnan",
+    "candidate_title": "Senior AI Engineer",
+    "role_title": "Lead AI Engineer",
+    "role_level": "Lead",
+    "meeting_objective": "Northwind AI - Lead AI Engineer - R2 Technical + System Design - Meera Krishnan",
+    "historical_context": "Cleared recruiter screen and R1. Strong RAG/evaluation background; applying up-level from Senior to Lead.",
+    "tracker_state": "Technical Interview (Round 2) / In Progress",
+    "focus_areas": [
+      "Multi-agent orchestration",
+      "System design",
+      "Evaluation & governance",
+      "Technical leadership"
+    ]
+  },
+  "evidence_graph": {
+    "nodes": [
+      {
+        "id": "t2",
+        "source_type": "transcript",
+        "locator": "transcript.turn[2]",
+        "content": "Thanks Priya, happy to be here. I'm a Senior AI Engineer at BrightPath, about four years in, mostly building RAG systems and LLM-powered search and support tools."
+      },
+      {
+        "id": "t4",
+        "source_type": "transcript",
+        "locator": "transcript.turn[4]",
+        "content": "The main one is a customer-support assistant. It's a RAG pipeline - retrieval over our docs in a vector store, then an LLM that can call a few tools like ticket lookup and order status. It handles a good chunk of tier-1 tickets, so I'd call it our multi-agent support system."
+      },
+      {
+        "id": "t6",
+        "source_type": "transcript",
+        "locator": "transcript.turn[6]",
+        "content": "Fair - in production it's really one agent with tool calls. I prototyped a planner-and-executor split in a side project, but it never went to production. So multi-agent orchestration at scale is honestly newer territory for me."
+      },
+      {
+        "id": "t8",
+        "source_type": "transcript",
+        "locator": "transcript.turn[8]",
+        "content": "That part I'm solid on. I built an offline eval set of a few hundred real queries with expected answers, ran LLM-as-judge for answer relevance and faithfulness, and tracked those metrics on every prompt change before shipping. It caught several regressions."
+      },
+      {
+        "id": "t10",
+        "source_type": "transcript",
+        "locator": "transcript.turn[10]",
+        "content": "We logged requests and responses to a dashboard and had some latency and error metrics. We didn't really have formal compliance requirements, so there wasn't a structured audit trail or policy layer - I haven't worked much with things like NIST or model-risk frameworks."
+      },
+      {
+        "id": "t12",
+        "source_type": "transcript",
+        "locator": "transcript.turn[12]",
+        "content": "Okay - I'd ingest the interview transcript and the candidate resume, chunk and embed them, then run a RAG step to pull the relevant parts against the job description. Then an LLM scores the candidate on a rubric and outputs a recommendation. I'd store results in a database and show them in a dashboard for the recruiter to review."
+      },
+      {
+        "id": "t14",
+        "source_type": "transcript",
+        "locator": "transcript.turn[14]",
+        "content": "I'd probably have the recruiter click approve in the dashboard before anything is sent, and then call the ATS and email APIs. I haven't designed that lifecycle in a lot of detail before - I'd want to think more about how the pieces coordinate."
+      },
+      {
+        "id": "t16",
+        "source_type": "transcript",
+        "locator": "transcript.turn[16]",
+        "content": "I'd add retries, and maybe a validation step to check the output format. If it's clearly wrong we'd fall back to a default or flag it. I'll admit I haven't formalized confidence thresholds or an escalation flow in production."
+      },
+      {
+        "id": "t18",
+        "source_type": "transcript",
+        "locator": "transcript.turn[18]",
+        "content": "I'd add more workers behind a queue and cache the embeddings so we're not recomputing them. Beyond that - things like model tiering or backpressure - I know the terms but haven't had to tune a system at that scale myself."
+      },
+      {
+        "id": "t20",
+        "source_type": "transcript",
+        "locator": "transcript.turn[20]",
+        "content": "I led a two-engineer squad on the support-assistant feature - I planned the work and reviewed their PRs, and coordinated with one other team on the API. I haven't owned cross-organization contracts or led a larger group yet, but stepping up to that kind of leadership is exactly why I'm interested in a lead role."
+      },
+      {
+        "id": "t22",
+        "source_type": "transcript",
+        "locator": "transcript.turn[22]",
+        "content": "Honestly, going deeper on true multi-agent orchestration and on production governance and observability. My depth is in RAG and evaluation; the agentic-platform and compliance side is where I most want to grow."
+      },
+      {
+        "id": "t23",
+        "source_type": "transcript",
+        "locator": "transcript.turn[23]",
+        "content": "One question from me - for someone stepping up into this lead role, what kind of ramp-up or mentorship would there be on the multi-agent and platform side?"
+      },
+      {
+        "id": "resume:skills",
+        "source_type": "resume",
+        "locator": "payload.candidate.skills",
+        "content": "Python, RAG, Prompt Engineering, LangChain, Fine-tuning, FAISS, Vector Search, LLM-as-judge Evaluation, FastAPI"
+      },
+      {
+        "id": "resume:highlights",
+        "source_type": "resume",
+        "locator": "payload.candidate.highlights",
+        "content": "Built and shipped a production RAG-based customer-support assistant handling tier-1 tickets | Owns an offline LLM evaluation pipeline (LLM-as-judge) gating prompt changes | Led a 2-engineer feature squad"
+      },
+      {
+        "id": "tracker:record",
+        "source_type": "tracker",
+        "locator": "payload.tracker",
+        "content": "Technical Interview (Round 2) / In Progress (round 2)"
+      },
+      {
+        "id": "notes:prev",
+        "source_type": "interview_notes",
+        "locator": "payload.tracker.notes",
+        "content": "Cleared recruiter screen and R1. Strong RAG/evaluation background; applying up-level from Senior to Lead."
+      },
+      {
+        "id": "jd:must:0",
+        "source_type": "job_description",
+        "locator": "payload.role.must_have_skills[0]",
+        "content": "Multi-agent orchestration (LangGraph)"
+      },
+      {
+        "id": "jd:must:1",
+        "source_type": "job_description",
+        "locator": "payload.role.must_have_skills[1]",
+        "content": "Production GenAI at scale"
+      },
+      {
+        "id": "jd:must:2",
+        "source_type": "job_description",
+        "locator": "payload.role.must_have_skills[2]",
+        "content": "LLM evaluation pipelines"
+      },
+      {
+        "id": "jd:must:3",
+        "source_type": "job_description",
+        "locator": "payload.role.must_have_skills[3]",
+        "content": "Technical leadership"
+      }
+    ],
+    "relationships": [
+      {
+        "from_id": "t4",
+        "to_id": "jd:must:0",
+        "relation": "addresses"
+      },
+      {
+        "from_id": "t23",
+        "to_id": "jd:must:0",
+        "relation": "addresses"
+      },
+      {
+        "from_id": "t6",
+        "to_id": "jd:must:1",
+        "relation": "addresses"
+      },
+      {
+        "from_id": "resume:skills",
+        "to_id": "jd:must:2",
+        "relation": "supports"
+      },
+      {
+        "from_id": "t4",
+        "to_id": "jd:must:2",
+        "relation": "supports"
+      },
+      {
+        "from_id": "t8",
+        "to_id": "jd:must:2",
+        "relation": "supports"
+      },
+      {
+        "from_id": "t23",
+        "to_id": "jd:must:3",
+        "relation": "addresses"
+      }
+    ],
+    "missing_sources": [
+      "rubric"
+    ]
+  },
+  "findings": {
+    "strengths": [
+      {
+        "statement": "Strong, evidence-backed depth in LLM evaluation pipelines.",
+        "evidence_refs": [
+          {
+            "evidence_id": "resume:skills",
+            "quote": "Python, RAG, Prompt Engineering, LangChain, Fine-tuning, FAISS, Vector Search, LLM-as-judge Evaluation, FastAPI"
+          },
+          {
+            "evidence_id": "t4",
+            "quote": "The main one is a customer-support assistant. It's a RAG pipeline - retrieval over our docs in a vector store, then an LLM that can call a…"
+          },
+          {
+            "evidence_id": "t8",
+            "quote": "That part I'm solid on. I built an offline eval set of a few hundred real queries with expected answers, ran LLM-as-judge for answer releva…"
+          }
+        ]
+      }
+    ],
+    "weaknesses": [
+      {
+        "statement": "Limited demonstrated depth in Multi-agent orchestration (LangGraph).",
+        "evidence_refs": [
+          {
+            "evidence_id": "t6",
+            "quote": "Fair - in production it's really one agent with tool calls. I prototyped a planner-and-executor split in a side project, but it never went…"
+          },
+          {
+            "evidence_id": "t22",
+            "quote": "Honestly, going deeper on true multi-agent orchestration and on production governance and observability. My depth is in RAG and evaluation;…"
+          }
+        ]
+      },
+      {
+        "statement": "Limited demonstrated depth in Production GenAI at scale.",
+        "evidence_refs": [
+          {
+            "evidence_id": "t6",
+            "quote": "Fair - in production it's really one agent with tool calls. I prototyped a planner-and-executor split in a side project, but it never went…"
+          }
+        ]
+      },
+      {
+        "statement": "Limited demonstrated depth in Technical leadership.",
+        "evidence_refs": [
+          {
+            "evidence_id": "t20",
+            "quote": "I led a two-engineer squad on the support-assistant feature - I planned the work and reviewed their PRs, and coordinated with one other tea…"
+          }
+        ]
+      }
+    ],
+    "risks": [
+      {
+        "statement": "Majority of core requirements are not yet evidenced.",
+        "evidence_refs": [
+          {
+            "evidence_id": "jd:must:0",
+            "quote": "Multi-agent orchestration (LangGraph)"
+          }
+        ]
+      },
+      {
+        "statement": "Candidate is applying up-level; leadership scope is unproven.",
+        "evidence_refs": [
+          {
+            "evidence_id": "notes:prev",
+            "quote": "Cleared recruiter screen and R1. Strong RAG/evaluation background; applying up-level from Senior to Lead."
+          }
+        ]
+      },
+      {
+        "statement": "Only 4 years' experience for a Lead role.",
+        "evidence_refs": [
+          {
+            "evidence_id": "tracker:record",
+            "quote": "Technical Interview (Round 2) / In Progress (round 2)"
+          }
+        ]
+      }
+    ],
+    "contradictions": [
+      {
+        "statement": "Claimed Multi-agent orchestration (LangGraph) but later walked it back.",
+        "evidence_refs": [
+          {
+            "evidence_id": "t4",
+            "quote": "The main one is a customer-support assistant. It's a RAG pipeline - retrieval over our docs in a vector store, then an LLM that can call a…"
+          },
+          {
+            "evidence_id": "t23",
+            "quote": "One question from me - for someone stepping up into this lead role, what kind of ramp-up or mentorship would there be on the multi-agent an…"
+          },
+          {
+            "evidence_id": "t6",
+            "quote": "Fair - in production it's really one agent with tool calls. I prototyped a planner-and-executor split in a side project, but it never went…"
+          },
+          {
+            "evidence_id": "t22",
+            "quote": "Honestly, going deeper on true multi-agent orchestration and on production governance and observability. My depth is in RAG and evaluation;…"
+          }
+        ]
+      },
+      {
+        "statement": "Claimed Technical leadership but later walked it back.",
+        "evidence_refs": [
+          {
+            "evidence_id": "t23",
+            "quote": "One question from me - for someone stepping up into this lead role, what kind of ramp-up or mentorship would there be on the multi-agent an…"
+          },
+          {
+            "evidence_id": "t20",
+            "quote": "I led a two-engineer squad on the support-assistant feature - I planned the work and reviewed their PRs, and coordinated with one other tea…"
+          }
+        ]
+      }
+    ],
+    "missing_information": [
+      {
+        "statement": "No scoring rubric was provided in the Meeting Package.",
+        "evidence_refs": []
+      }
+    ],
+    "open_questions": [
+      {
+        "statement": "Clarify depth in nice-to-have: FinServ compliance (NIST AI RMF / EU AI Act / SR 11-7).",
+        "evidence_refs": []
+      },
+      {
+        "statement": "Clarify depth in nice-to-have: MCP.",
+        "evidence_refs": []
+      },
+      {
+        "statement": "Clarify depth in nice-to-have: Observability (OpenTelemetry).",
+        "evidence_refs": []
+      }
+    ]
+  },
+  "assessment": {
+    "suitability": "Limited fit; core requirements unproven",
+    "confidence": 0.54,
+    "risk": "high",
+    "escalation": true,
+    "blockers": [
+      "Multi-agent orchestration (LangGraph)",
+      "Production GenAI at scale",
+      "Technical leadership"
+    ]
+  },
+  "decision": {
+    "recommendation": "hold",
+    "alternatives": [
+      "additional_interview",
+      "reject"
+    ],
+    "confidence": 0.54,
+    "reasoning": "1/4 must-have requirements are evidenced (limited fit; core requirements unproven). Recommendation: hold.",
+    "evidence_refs": [
+      {
+        "evidence_id": "resume:skills",
+        "quote": "Python, RAG, Prompt Engineering, LangChain, Fine-tuning, FAISS, Vector Search, LLM-as-judge Evaluation, FastAPI"
+      },
+      {
+        "evidence_id": "t4",
+        "quote": "The main one is a customer-support assistant. It's a RAG pipeline - retrieval over our docs in a vector store, then an LLM that can call a…"
+      },
+      {
+        "evidence_id": "t8",
+        "quote": "That part I'm solid on. I built an offline eval set of a few hundred real queries with expected answers, ran LLM-as-judge for answer releva…"
+      }
+    ]
+  },
+  "action_plan": {
+    "items": [
+      {
+        "type": "tracker_update",
+        "description": "Record R2 outcome for Meera Krishnan.",
+        "target": "cand-002-meera",
+        "evidence_refs": [
+          {
+            "evidence_id": "resume:skills",
+            "quote": "Python, RAG, Prompt Engineering, LangChain, Fine-tuning, FAISS, Vector Search, LLM-as-judge Evaluation, FastAPI"
+          },
+          {
+            "evidence_id": "t4",
+            "quote": "The main one is a customer-support assistant. It's a RAG pipeline - retrieval over our docs in a vector store, then an LLM that can call a…"
+          },
+          {
+            "evidence_id": "t8",
+            "quote": "That part I'm solid on. I built an offline eval set of a few hundred real queries with expected answers, ran LLM-as-judge for answer releva…"
+          }
+        ]
+      },
+      {
+        "type": "notify_hiring_manager",
+        "description": "Discuss hold / pipeline calibration.",
+        "target": "Hiring Manager",
+        "evidence_refs": []
+      }
+    ]
+  },
+  "drafts": {
+    "draft_email": {
+      "to": "Meera Krishnan",
+      "subject": "Update on your Lead AI Engineer application",
+      "body": "Hi Meera Krishnan,\n\nThank you for your time. We're completing our review and will be in touch with next steps soon.\n\nBest regards,\nNorthwind AI"
+    },
+    "tracker_update_proposal": {
+      "candidate_id": "cand-002-meera",
+      "summary": "R2 → hold",
+      "changes": {
+        "status": "On Hold",
+        "current_stage": "Technical Interview (Round 2)"
+      }
+    }
+  }
+}

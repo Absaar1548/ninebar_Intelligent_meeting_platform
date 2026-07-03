@@ -4,6 +4,7 @@ internal reasoning artifact. Modification resume convergence point in Phase 3.""
 from __future__ import annotations
 
 from backend.agents.hiring.nodes.base import with_message
+from backend.agents.hiring.services.evidence import enrich_evidence_quotes
 from backend.agents.hiring.services.operations_package_builder import (
     build_operations_package,
 )
@@ -23,6 +24,7 @@ def operations_package_generation_node(state: WorkflowState) -> dict:
         action_plan=state["action_plan"],
         drafts=state["drafts"],
     )
+    enrich_evidence_quotes(ops)  # self-resolving citations (both LLM + fallback)
     return with_message(
         state,
         {

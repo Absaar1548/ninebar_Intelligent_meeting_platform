@@ -230,3 +230,39 @@ def validate_decision_grounded(decision: Decision, graph: EvidenceGraph) -> None
     ids = evidence_ids(graph)
     if not decision.evidence_refs or not refs_grounded(decision.evidence_refs, ids):
         raise ValueError("Decision is not grounded in evidence")
+
+
+# --------------------------------------------------------------------------
+# Citation enrichment — attach the evidence node's content to each reference so
+# citations are self-resolving (works for both LLM and deterministic output).
+# --------------------------------------------------------------------------
+def _truncate(text: str, limit: int = 140) -> str:
+    text = " ".join((text or "").split())
+    return text if len(text) <= limit else text[: limit - 1].rstrip() + "…"
+
+
+def quote_for(evidence_id: str, graph: EvidenceGraph) -> str | None:
+    for node in graph.nodes:
+        if node.id == evidence_id:
+            return _truncate(node.content)
+    return None
+
+
+def _enrich_refs(refs: list[EvidenceRef], graph: EvidenceGraph) -> None:
+    for ref in refs:
+        if not ref.quote:
+            quote = quote_for(ref.evidence_id, graph)
+            if quote:
+                ref.quote = quote
+
+
+def enrich_evidence_quotes(ops) -> None:
+    """Backfill ``EvidenceRef.quote`` from the Evidence Graph for every finding
+    and the decision, in place, so citations carry concrete text."""
+    graph = ops.evidence_graph
+    f = ops.findings
+    for group in (f.strengths, f.weaknesses, f.risks, f.contradictions,
+                  f.missing_information, f.open_questions):
+        for finding in group:
+            _enrich_refs(finding.evidence_refs, graph)
+    _enrich_refs(ops.decision.evidence_refs, graph)

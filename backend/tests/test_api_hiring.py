@@ -18,6 +18,10 @@ def test_start_returns_waiting_approval(api_client):
     assert d["workflow_stage"] == "waiting_approval"
     assert d["waiting_for_human"] is True
     assert d["approval_package"]["recommendation"] == "move_forward"
+    # internal reasoning artifact + chat transcript are exposed for the UI
+    assert d["operations_package"] is not None
+    assert d["operations_package"]["evidence_graph"]["nodes"]
+    assert any(m["kind"] == "chat" for m in d["messages"])
 
 
 def test_approve_completes_and_executes(api_client):

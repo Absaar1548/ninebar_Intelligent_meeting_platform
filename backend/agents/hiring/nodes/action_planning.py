@@ -3,7 +3,11 @@ Modification resume entry point in Phase 3."""
 
 from __future__ import annotations
 
-from backend.agents.hiring.nodes.base import get_llm_client, with_message
+from backend.agents.hiring.nodes.base import (
+    get_llm_client,
+    revision_for,
+    with_message,
+)
 from backend.agents.hiring.prompts.base import SYSTEM_PROMPT
 from backend.agents.hiring.prompts.reasoning import action_planning_prompt
 from backend.agents.hiring.services.fallbacks import fallback_action_plan
@@ -17,8 +21,9 @@ def action_planning_node(state: WorkflowState) -> dict:
     decision = state["decision"]
     assessment = state["assessment"]
     ctx = state["interview_context"]
+    revision = revision_for(state, "action_planning")
     plan = get_llm_client().generate_structured(
-        action_planning_prompt(decision, assessment, ctx),
+        action_planning_prompt(decision, assessment, ctx, revision=revision),
         ActionPlan,
         system=SYSTEM_PROMPT,
         fallback_fn=lambda: fallback_action_plan(mp, decision),

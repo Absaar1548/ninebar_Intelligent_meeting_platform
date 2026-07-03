@@ -3,8 +3,9 @@ finalize the workflow. No real external side effects."""
 
 from __future__ import annotations
 
-from backend.agents.hiring.nodes.base import with_message
+from backend.agents.hiring.nodes.base import with_chat_message
 from backend.core.execution.engine import execute
+from backend.core.renderer import render_execution_markdown
 from backend.schemas.enums import WorkflowStage
 from backend.schemas.workflow_state import WorkflowState
 
@@ -14,10 +15,7 @@ def mock_execution_node(state: WorkflowState) -> dict:
     report = execute(ap)
     updated = ap.model_copy(update={"execution_status": report.status})
     stage = WorkflowStage.COMPLETED if report.ok else WorkflowStage.FAILED
-    summary = "; ".join(
-        f"{r.adapter}:{'ok' if r.ok else 'FAIL'}" for r in report.results
-    )
-    return with_message(
+    return with_chat_message(
         state,
         {
             "approval_package": updated,
@@ -25,5 +23,5 @@ def mock_execution_node(state: WorkflowState) -> dict:
             "execution_status": report.status,
             "workflow_stage": stage,
         },
-        f"Mock execution {report.status.value} ({summary}).",
+        render_execution_markdown(report),
     )

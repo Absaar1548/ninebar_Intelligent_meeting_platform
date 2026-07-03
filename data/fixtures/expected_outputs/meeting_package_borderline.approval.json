@@ -1,0 +1,69 @@
+{
+  "meeting_id": "mtg-2026-0701-meera",
+  "generated_at": "2026-07-03T09:58:02.087533Z",
+  "executive_summary": "**Meera Krishnan** — assessed as *limited fit; core requirements unproven* for Lead AI Engineer (Lead). Recommendation: **HOLD** at 54% confidence. **Strengths:** Strong, evidence-backed depth in LLM evaluation pipelines (resume:skills, t4, t8). **Gaps:** Limited demonstrated depth in Multi-agent orchestration (LangGraph) (t6, t22); Limited demonstrated depth in Production GenAI at scale (t6). **Risks:** Majority of core requirements are not yet evidenced (jd:must:0).",
+  "recommendation": "hold",
+  "confidence": 0.54,
+  "evidence": [
+    {
+      "evidence_id": "resume:skills",
+      "quote": "Python, RAG, Prompt Engineering, LangChain, Fine-tuning, FAISS, Vector Search, LLM-as-judge Evaluation, FastAPI"
+    },
+    {
+      "evidence_id": "t4",
+      "quote": "The main one is a customer-support assistant. It's a RAG pipeline - retrieval over our docs in a vector store, then an LLM that can call a…"
+    },
+    {
+      "evidence_id": "t8",
+      "quote": "That part I'm solid on. I built an offline eval set of a few hundred real queries with expected answers, ran LLM-as-judge for answer releva…"
+    }
+  ],
+  "decision": {
+    "recommendation": "hold",
+    "reasoning": "1/4 must-have requirements are evidenced (limited fit; core requirements unproven). Recommendation: hold.",
+    "confidence": 0.54
+  },
+  "action_items": [
+    {
+      "type": "tracker_update",
+      "description": "Record R2 outcome for Meera Krishnan.",
+      "target": "cand-002-meera",
+      "evidence_refs": [
+        {
+          "evidence_id": "resume:skills",
+          "quote": "Python, RAG, Prompt Engineering, LangChain, Fine-tuning, FAISS, Vector Search, LLM-as-judge Evaluation, FastAPI"
+        },
+        {
+          "evidence_id": "t4",
+          "quote": "The main one is a customer-support assistant. It's a RAG pipeline - retrieval over our docs in a vector store, then an LLM that can call a…"
+        },
+        {
+          "evidence_id": "t8",
+          "quote": "That part I'm solid on. I built an offline eval set of a few hundred real queries with expected answers, ran LLM-as-judge for answer releva…"
+        }
+      ]
+    },
+    {
+      "type": "notify_hiring_manager",
+      "description": "Discuss hold / pipeline calibration.",
+      "target": "Hiring Manager",
+      "evidence_refs": []
+    }
+  ],
+  "draft_email": {
+    "to": "Meera Krishnan",
+    "subject": "Update on your Lead AI Engineer application",
+    "body": "Hi Meera Krishnan,\n\nThank you for your time. We're completing our review and will be in touch with next steps soon.\n\nBest regards,\nNorthwind AI"
+  },
+  "tracker_updates": {
+    "candidate_id": "cand-002-meera",
+    "summary": "R2 → hold",
+    "changes": {
+      "status": "On Hold",
+      "current_stage": "Technical Interview (Round 2)"
+    }
+  },
+  "approval_status": "pending",
+  "human_comments": [],
+  "execution_status": "not_started"
+}

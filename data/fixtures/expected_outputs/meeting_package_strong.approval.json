@@ -1,0 +1,105 @@
+{
+  "meeting_id": "mtg-2026-0630-absaar",
+  "generated_at": "2026-07-03T09:58:02.056331Z",
+  "executive_summary": "**Absaar Ali** — assessed as *strong fit for the role* for Lead AI Engineer (Lead). Recommendation: **MOVE FORWARD** at 81% confidence. **Strengths:** Strong, evidence-backed depth in Multi-agent orchestration (LangGraph) (resume:skills, t4, t8); Strong, evidence-backed depth in LLM evaluation pipelines (t14). **Gaps:** No interview evidence for required skill: Production GenAI at scale (jd:must:1); No scoring rubric was provided in the Meeting Package. **Risks:** Only 2 years' experience for a Lead role (tracker:record).",
+  "recommendation": "move_forward",
+  "confidence": 0.81,
+  "evidence": [
+    {
+      "evidence_id": "resume:skills",
+      "quote": "Python, TypeScript, LangGraph, Multi-Agent Systems, LLM Orchestration, RAG, Azure OpenAI (GPT-4o), MCP, FastAPI, Next.js, PostgreSQL, Neo4j…"
+    },
+    {
+      "evidence_id": "t4",
+      "quote": "The largest is an agentic SDLC automation platform for a major US financial institution. It targets a 25-agent fleet, with 7 agents live at…"
+    },
+    {
+      "evidence_id": "t8",
+      "quote": "I built a typed Context Assembly layer that orchestrates retrievers over Azure AI Search and a Neo4j knowledge graph, with ACL pre-filterin…"
+    },
+    {
+      "evidence_id": "t14",
+      "quote": "I'll split it into a live layer and a reasoning layer. Live: a three-channel Socket.IO system - control, answer, and media - driving the in…"
+    },
+    {
+      "evidence_id": "t22",
+      "quote": "Early on I over-indexed on flexibility and left the agents too loosely coupled, which cost us time when interfaces shifted; the lesson was…"
+    },
+    {
+      "evidence_id": "t23",
+      "quote": "A couple of questions from my side: how large is the team I'd be leading, what does the platform roadmap look like over the next few quarte…"
+    }
+  ],
+  "decision": {
+    "recommendation": "move_forward",
+    "reasoning": "3/4 must-have requirements are evidenced (strong fit for the role). Recommendation: move forward.",
+    "confidence": 0.81
+  },
+  "action_items": [
+    {
+      "type": "tracker_update",
+      "description": "Record R2 outcome for Absaar Ali.",
+      "target": "cand-001-absaar",
+      "evidence_refs": [
+        {
+          "evidence_id": "resume:skills",
+          "quote": "Python, TypeScript, LangGraph, Multi-Agent Systems, LLM Orchestration, RAG, Azure OpenAI (GPT-4o), MCP, FastAPI, Next.js, PostgreSQL, Neo4j…"
+        },
+        {
+          "evidence_id": "t4",
+          "quote": "The largest is an agentic SDLC automation platform for a major US financial institution. It targets a 25-agent fleet, with 7 agents live at…"
+        },
+        {
+          "evidence_id": "t8",
+          "quote": "I built a typed Context Assembly layer that orchestrates retrievers over Azure AI Search and a Neo4j knowledge graph, with ACL pre-filterin…"
+        },
+        {
+          "evidence_id": "t14",
+          "quote": "I'll split it into a live layer and a reasoning layer. Live: a three-channel Socket.IO system - control, answer, and media - driving the in…"
+        },
+        {
+          "evidence_id": "t22",
+          "quote": "Early on I over-indexed on flexibility and left the agents too loosely coupled, which cost us time when interfaces shifted; the lesson was…"
+        },
+        {
+          "evidence_id": "t23",
+          "quote": "A couple of questions from my side: how large is the team I'd be leading, what does the platform roadmap look like over the next few quarte…"
+        }
+      ]
+    },
+    {
+      "type": "notify_hiring_manager",
+      "description": "Notify hiring manager of a strong pass.",
+      "target": "Hiring Manager",
+      "evidence_refs": []
+    },
+    {
+      "type": "schedule_interview",
+      "description": "Schedule Hiring Manager / Final Round.",
+      "target": "Absaar Ali",
+      "evidence_refs": []
+    },
+    {
+      "type": "candidate_email",
+      "description": "Send advancement email to the candidate.",
+      "target": "Absaar Ali",
+      "evidence_refs": []
+    }
+  ],
+  "draft_email": {
+    "to": "Absaar Ali",
+    "subject": "Great news on your Lead AI Engineer interview",
+    "body": "Hi Absaar Ali,\n\nThank you for the round-2 conversation. We were impressed and would like to move you forward to Hiring Manager / Final Round. We'll follow up shortly with scheduling.\n\nBest regards,\nNorthwind AI"
+  },
+  "tracker_updates": {
+    "candidate_id": "cand-001-absaar",
+    "summary": "R2 → move forward",
+    "changes": {
+      "status": "Advanced",
+      "current_stage": "Hiring Manager / Final Round"
+    }
+  },
+  "approval_status": "pending",
+  "human_comments": [],
+  "execution_status": "not_started"
+}

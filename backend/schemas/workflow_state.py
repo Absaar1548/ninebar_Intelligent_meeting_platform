@@ -32,12 +32,18 @@ from backend.schemas.operations_package import OperationsPackage
 
 
 class Message(BaseModel):
-    """One entry in the session's ordered chat/interaction record."""
+    """One entry in the session's ordered chat/interaction record.
+
+    ``kind`` separates the human-facing conversation (``chat``) from the
+    internal reasoning trace (``internal``) so the UI can route them to the
+    chat vs. the "Internal Processing & Memory" panel.
+    """
 
     model_config = ConfigDict(extra="ignore")
 
     role: str  # "agent" | "human" | "system"
     content: str
+    kind: str = "internal"  # "internal" (trace) | "chat" (human-facing)
     timestamp: datetime = Field(default_factory=utcnow)
 
 

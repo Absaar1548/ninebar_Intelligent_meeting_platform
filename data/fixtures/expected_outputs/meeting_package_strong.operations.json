@@ -1,0 +1,376 @@
+{
+  "meeting_id": "mtg-2026-0630-absaar",
+  "generated_at": "2026-07-03T09:58:02.056331Z",
+  "context_analysis": {
+    "interview_stage": "Technical + System Design (Round 2)",
+    "candidate_name": "Absaar Ali",
+    "candidate_title": "Lead AI Engineer",
+    "role_title": "Lead AI Engineer",
+    "role_level": "Lead",
+    "meeting_objective": "Northwind AI - Lead AI Engineer - R2 Technical + System Design - Absaar Ali",
+    "historical_context": "Cleared recruiter screen and R1 (coding). Strong resume in agentic AI and LLM orchestration.",
+    "tracker_state": "Technical Interview (Round 2) / In Progress",
+    "focus_areas": [
+      "Multi-agent orchestration",
+      "System design",
+      "Evaluation & governance",
+      "Technical leadership"
+    ]
+  },
+  "evidence_graph": {
+    "nodes": [
+      {
+        "id": "t2",
+        "source_type": "transcript",
+        "locator": "transcript.turn[2]",
+        "content": "Sounds great, thanks Priya, and good to meet you Marcus. Happy to dig into any of it."
+      },
+      {
+        "id": "t4",
+        "source_type": "transcript",
+        "locator": "transcript.turn[4]",
+        "content": "The largest is an agentic SDLC automation platform for a major US financial institution. It targets a 25-agent fleet, with 7 agents live at MVP, all running on a shared LangGraph orchestration layer over Azure OpenAI, backed by a 13-server MCP infrastructure. Each unit of work is a graph thread with checkpointing, so runs are resumable and every step is auditable with 7-year WORM retention. I directed three of the eight workstreams: Input Validation, Context Assembly, and Governance/Security/Observability."
+      },
+      {
+        "id": "t6",
+        "source_type": "transcript",
+        "locator": "transcript.turn[6]",
+        "content": "We defined typed cross-workstream contracts up front: a Validated Request, a Context Bundle, a Policy Decision, and an AgentTrace/AuditEvent. Those became the only interfaces between workstreams, versioned with schema checks in CI so a breaking change failed the build. That single decision - locking the contracts before anyone wrote agent logic - is what prevented drift before we ever hit production."
+      },
+      {
+        "id": "t8",
+        "source_type": "transcript",
+        "locator": "transcript.turn[8]",
+        "content": "I built a typed Context Assembly layer that orchestrates retrievers over Azure AI Search and a Neo4j knowledge graph, with ACL pre-filtering so an agent never even retrieves something the requesting identity can't see. Inside the 128k window I do token-budget eviction with a fixed priority order, and I keep the prompt prefix cache-stable so we get prompt-cache hits and deterministic ordering. That kept P95 latency under five seconds at 99.95% availability."
+      },
+      {
+        "id": "t10",
+        "source_type": "transcript",
+        "locator": "transcript.turn[10]",
+        "content": "Two layers. Offline, a golden dataset with task-specific rubrics and LLM-as-judge scoring, gated in CI so quality regressions blocked a release. Online, every agent output is a structured, schema-validated object with a confidence score; anything below threshold is routed to a human instead of acted on. On HiringLens I used the same pattern to produce STRONG_HIRE / HIRE / CONSIDER / NO_HIRE recommendations from scoring, communication metrics, and proctoring flags."
+      },
+      {
+        "id": "t12",
+        "source_type": "transcript",
+        "locator": "transcript.turn[12]",
+        "content": "I introduced a Policy Decision Point abstraction so authorization and policy were a first-class step in the graph, plus an append-only audit projection. I authored the regulatory-mapping artifacts aligning the design to NIST AI RMF, the EU AI Act, and SR 11-7, and standardized OpenTelemetry GenAI telemetry across agents so every decision was traceable end to end. Compliance drove the control points; it wasn't an afterthought."
+      },
+      {
+        "id": "t14",
+        "source_type": "transcript",
+        "locator": "transcript.turn[14]",
+        "content": "I'll split it into a live layer and a reasoning layer. Live: a three-channel Socket.IO system - control, answer, and media - driving the interview lifecycle, with Azure Speech-to-Text for live transcription and concurrent proctoring using Face API plus pyannote speaker diarization. That produces a standardized package: transcript, candidate profile, role context. Reasoning: an evidence-first pipeline - extract quote-level evidence, then evaluate against the rubric, then derive a recommendation with confidence. Every external action - email, ATS update, scheduling - goes through a human approval gate via adapters, so nothing fires automatically. Deployment on AKS behind APIM, with Semaphore-based rate limiting to the model. I actually built a production version of this - HiringLens - at 90%-plus selection relevance."
+      },
+      {
+        "id": "t16",
+        "source_type": "transcript",
+        "locator": "transcript.turn[16]",
+        "content": "Every model call requests a structured output validated against a JSON schema; on validation failure I retry with the error fed back, up to a bounded number of attempts. If it still fails, or confidence is below threshold, the item is escalated to a human rather than acted on. Side effects are idempotent and sit behind the approval gate, so a bad generation can never silently send an email or mutate the tracker. Where it makes sense I keep a deterministic fallback path."
+      },
+      {
+        "id": "t18",
+        "source_type": "transcript",
+        "locator": "transcript.turn[18]",
+        "content": "Async orchestration end to end, and model tiering - small cheap models for routing, extraction, and classification, and the large model only for the final judgment step. Cache-stable prompts to hit the prompt cache, aggressive token budgeting, batching where latency allows, and backpressure so a spike degrades gracefully instead of falling over. That combination is what let the earlier platform hold P95 under five seconds economically."
+      },
+      {
+        "id": "t20",
+        "source_type": "transcript",
+        "locator": "transcript.turn[20]",
+        "content": "On the SDLC platform a stakeholder wanted to defer the governance and audit work to hit an earlier demo date. I pushed back, quantified the regulatory exposure under SR 11-7 and the rework cost of retrofitting audit later, and proposed a thin end-to-end slice that included the audit projection from day one. They agreed, and locking the contracts and telemetry standards early is a big part of why we avoided drift. Alongside that I mentored two engineers on the context and governance workstreams."
+      },
+      {
+        "id": "t22",
+        "source_type": "transcript",
+        "locator": "transcript.turn[22]",
+        "content": "Early on I over-indexed on flexibility and left the agents too loosely coupled, which cost us time when interfaces shifted; the lesson was to lock typed contracts and telemetry up front, which I now do by default. The other thing I'm consciously working on is delegating more - as a lead I have to resist doing the hard integration myself and instead grow the team to own it."
+      },
+      {
+        "id": "t23",
+        "source_type": "transcript",
+        "locator": "transcript.turn[23]",
+        "content": "A couple of questions from my side: how large is the team I'd be leading, what does the platform roadmap look like over the next few quarters, and how do you currently balance delivery velocity against governance and evaluation rigor?"
+      },
+      {
+        "id": "resume:skills",
+        "source_type": "resume",
+        "locator": "payload.candidate.skills",
+        "content": "Python, TypeScript, LangGraph, Multi-Agent Systems, LLM Orchestration, RAG, Azure OpenAI (GPT-4o), MCP, FastAPI, Next.js, PostgreSQL, Neo4j, Azure AI Search, OpenTelemetry, Docker, PyTorch"
+      },
+      {
+        "id": "resume:highlights",
+        "source_type": "resume",
+        "locator": "payload.candidate.highlights",
+        "content": "Directed 3 of 8 workstreams on a 25-agent SDLC automation platform (LangGraph + Azure OpenAI + 13-server MCP) for a major US financial institution | Built HiringLens AI, an end-to-end L1 interview automation platform (Next.js/FastAPI/GPT-4o) with 90%+ selection relevance | Winner, Miltos Petridis Memorial Trophy, SGAI International Conference on AI 2025 | GATE DA 2025 - All India Rank 764"
+      },
+      {
+        "id": "tracker:record",
+        "source_type": "tracker",
+        "locator": "payload.tracker",
+        "content": "Technical Interview (Round 2) / In Progress (round 2)"
+      },
+      {
+        "id": "notes:prev",
+        "source_type": "interview_notes",
+        "locator": "payload.tracker.notes",
+        "content": "Cleared recruiter screen and R1 (coding). Strong resume in agentic AI and LLM orchestration."
+      },
+      {
+        "id": "jd:must:0",
+        "source_type": "job_description",
+        "locator": "payload.role.must_have_skills[0]",
+        "content": "Multi-agent orchestration (LangGraph)"
+      },
+      {
+        "id": "jd:must:1",
+        "source_type": "job_description",
+        "locator": "payload.role.must_have_skills[1]",
+        "content": "Production GenAI at scale"
+      },
+      {
+        "id": "jd:must:2",
+        "source_type": "job_description",
+        "locator": "payload.role.must_have_skills[2]",
+        "content": "LLM evaluation pipelines"
+      },
+      {
+        "id": "jd:must:3",
+        "source_type": "job_description",
+        "locator": "payload.role.must_have_skills[3]",
+        "content": "Technical leadership"
+      }
+    ],
+    "relationships": [
+      {
+        "from_id": "resume:skills",
+        "to_id": "jd:must:0",
+        "relation": "supports"
+      },
+      {
+        "from_id": "t4",
+        "to_id": "jd:must:0",
+        "relation": "supports"
+      },
+      {
+        "from_id": "t8",
+        "to_id": "jd:must:0",
+        "relation": "supports"
+      },
+      {
+        "from_id": "t14",
+        "to_id": "jd:must:2",
+        "relation": "supports"
+      },
+      {
+        "from_id": "resume:skills",
+        "to_id": "jd:must:3",
+        "relation": "supports"
+      },
+      {
+        "from_id": "t22",
+        "to_id": "jd:must:3",
+        "relation": "supports"
+      },
+      {
+        "from_id": "t23",
+        "to_id": "jd:must:3",
+        "relation": "supports"
+      }
+    ],
+    "missing_sources": [
+      "rubric"
+    ]
+  },
+  "findings": {
+    "strengths": [
+      {
+        "statement": "Strong, evidence-backed depth in Multi-agent orchestration (LangGraph).",
+        "evidence_refs": [
+          {
+            "evidence_id": "resume:skills",
+            "quote": "Python, TypeScript, LangGraph, Multi-Agent Systems, LLM Orchestration, RAG, Azure OpenAI (GPT-4o), MCP, FastAPI, Next.js, PostgreSQL, Neo4j…"
+          },
+          {
+            "evidence_id": "t4",
+            "quote": "The largest is an agentic SDLC automation platform for a major US financial institution. It targets a 25-agent fleet, with 7 agents live at…"
+          },
+          {
+            "evidence_id": "t8",
+            "quote": "I built a typed Context Assembly layer that orchestrates retrievers over Azure AI Search and a Neo4j knowledge graph, with ACL pre-filterin…"
+          }
+        ]
+      },
+      {
+        "statement": "Strong, evidence-backed depth in LLM evaluation pipelines.",
+        "evidence_refs": [
+          {
+            "evidence_id": "t14",
+            "quote": "I'll split it into a live layer and a reasoning layer. Live: a three-channel Socket.IO system - control, answer, and media - driving the in…"
+          }
+        ]
+      },
+      {
+        "statement": "Strong, evidence-backed depth in Technical leadership.",
+        "evidence_refs": [
+          {
+            "evidence_id": "resume:skills",
+            "quote": "Python, TypeScript, LangGraph, Multi-Agent Systems, LLM Orchestration, RAG, Azure OpenAI (GPT-4o), MCP, FastAPI, Next.js, PostgreSQL, Neo4j…"
+          },
+          {
+            "evidence_id": "t22",
+            "quote": "Early on I over-indexed on flexibility and left the agents too loosely coupled, which cost us time when interfaces shifted; the lesson was…"
+          },
+          {
+            "evidence_id": "t23",
+            "quote": "A couple of questions from my side: how large is the team I'd be leading, what does the platform roadmap look like over the next few quarte…"
+          }
+        ]
+      }
+    ],
+    "weaknesses": [],
+    "risks": [
+      {
+        "statement": "Only 2 years' experience for a Lead role.",
+        "evidence_refs": [
+          {
+            "evidence_id": "tracker:record",
+            "quote": "Technical Interview (Round 2) / In Progress (round 2)"
+          }
+        ]
+      }
+    ],
+    "contradictions": [],
+    "missing_information": [
+      {
+        "statement": "No interview evidence for required skill: Production GenAI at scale.",
+        "evidence_refs": [
+          {
+            "evidence_id": "jd:must:1",
+            "quote": "Production GenAI at scale"
+          }
+        ]
+      },
+      {
+        "statement": "No scoring rubric was provided in the Meeting Package.",
+        "evidence_refs": []
+      }
+    ],
+    "open_questions": [
+      {
+        "statement": "Clarify depth in nice-to-have: FinServ compliance (NIST AI RMF / EU AI Act / SR 11-7).",
+        "evidence_refs": []
+      }
+    ]
+  },
+  "assessment": {
+    "suitability": "Strong fit for the role",
+    "confidence": 0.81,
+    "risk": "low",
+    "escalation": false,
+    "blockers": [
+      "Production GenAI at scale"
+    ]
+  },
+  "decision": {
+    "recommendation": "move_forward",
+    "alternatives": [
+      "additional_interview"
+    ],
+    "confidence": 0.81,
+    "reasoning": "3/4 must-have requirements are evidenced (strong fit for the role). Recommendation: move forward.",
+    "evidence_refs": [
+      {
+        "evidence_id": "resume:skills",
+        "quote": "Python, TypeScript, LangGraph, Multi-Agent Systems, LLM Orchestration, RAG, Azure OpenAI (GPT-4o), MCP, FastAPI, Next.js, PostgreSQL, Neo4j…"
+      },
+      {
+        "evidence_id": "t4",
+        "quote": "The largest is an agentic SDLC automation platform for a major US financial institution. It targets a 25-agent fleet, with 7 agents live at…"
+      },
+      {
+        "evidence_id": "t8",
+        "quote": "I built a typed Context Assembly layer that orchestrates retrievers over Azure AI Search and a Neo4j knowledge graph, with ACL pre-filterin…"
+      },
+      {
+        "evidence_id": "t14",
+        "quote": "I'll split it into a live layer and a reasoning layer. Live: a three-channel Socket.IO system - control, answer, and media - driving the in…"
+      },
+      {
+        "evidence_id": "t22",
+        "quote": "Early on I over-indexed on flexibility and left the agents too loosely coupled, which cost us time when interfaces shifted; the lesson was…"
+      },
+      {
+        "evidence_id": "t23",
+        "quote": "A couple of questions from my side: how large is the team I'd be leading, what does the platform roadmap look like over the next few quarte…"
+      }
+    ]
+  },
+  "action_plan": {
+    "items": [
+      {
+        "type": "tracker_update",
+        "description": "Record R2 outcome for Absaar Ali.",
+        "target": "cand-001-absaar",
+        "evidence_refs": [
+          {
+            "evidence_id": "resume:skills",
+            "quote": "Python, TypeScript, LangGraph, Multi-Agent Systems, LLM Orchestration, RAG, Azure OpenAI (GPT-4o), MCP, FastAPI, Next.js, PostgreSQL, Neo4j…"
+          },
+          {
+            "evidence_id": "t4",
+            "quote": "The largest is an agentic SDLC automation platform for a major US financial institution. It targets a 25-agent fleet, with 7 agents live at…"
+          },
+          {
+            "evidence_id": "t8",
+            "quote": "I built a typed Context Assembly layer that orchestrates retrievers over Azure AI Search and a Neo4j knowledge graph, with ACL pre-filterin…"
+          },
+          {
+            "evidence_id": "t14",
+            "quote": "I'll split it into a live layer and a reasoning layer. Live: a three-channel Socket.IO system - control, answer, and media - driving the in…"
+          },
+          {
+            "evidence_id": "t22",
+            "quote": "Early on I over-indexed on flexibility and left the agents too loosely coupled, which cost us time when interfaces shifted; the lesson was…"
+          },
+          {
+            "evidence_id": "t23",
+            "quote": "A couple of questions from my side: how large is the team I'd be leading, what does the platform roadmap look like over the next few quarte…"
+          }
+        ]
+      },
+      {
+        "type": "notify_hiring_manager",
+        "description": "Notify hiring manager of a strong pass.",
+        "target": "Hiring Manager",
+        "evidence_refs": []
+      },
+      {
+        "type": "schedule_interview",
+        "description": "Schedule Hiring Manager / Final Round.",
+        "target": "Absaar Ali",
+        "evidence_refs": []
+      },
+      {
+        "type": "candidate_email",
+        "description": "Send advancement email to the candidate.",
+        "target": "Absaar Ali",
+        "evidence_refs": []
+      }
+    ]
+  },
+  "drafts": {
+    "draft_email": {
+      "to": "Absaar Ali",
+      "subject": "Great news on your Lead AI Engineer interview",
+      "body": "Hi Absaar Ali,\n\nThank you for the round-2 conversation. We were impressed and would like to move you forward to Hiring Manager / Final Round. We'll follow up shortly with scheduling.\n\nBest regards,\nNorthwind AI"
+    },
+    "tracker_update_proposal": {
+      "candidate_id": "cand-001-absaar",
+      "summary": "R2 → move forward",
+      "changes": {
+        "status": "Advanced",
+        "current_stage": "Hiring Manager / Final Round"
+      }
+    }
+  }
+}

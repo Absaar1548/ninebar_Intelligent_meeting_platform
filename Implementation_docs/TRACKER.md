@@ -19,7 +19,7 @@ new phase until the previous one is approved by the user.
 | 2 | LangGraph Reasoning Pipeline (→ WAIT_FOR_HUMAN) | DONE | 100% |
 | 3 | Human-in-the-Loop: Intent, Approve/Modify/Unsupported, Mock Execution | DONE | 100% |
 | 4 | Platform Integration: FastAPI, Router, Watcher, Sessions | DONE | 100% |
-| 5 | Gradio UI + End-to-End Validation + Docs | NOT STARTED | 0% |
+| 5 | Gradio UI + End-to-End Validation + Docs | DONE | 100% |
 
 > Phase 0 is the bootstrap/planning task (this deliverable). Phases 1–5 are the
 > implementation phases and begin only after user approval, one at a time.
@@ -172,23 +172,50 @@ new phase until the previous one is approved by the user.
 
 ## Phase 5 — Gradio UI + End-to-End Validation + Docs
 
-- **Status:** NOT STARTED
-- **Progress:** 0%
+- **Status:** DONE (reviewed and approved; committed as Phase 5 — final phase)
+- **Progress:** 100%
 - **Deliverables:**
-  - [ ] `frontend/`: app, pages, components (chat, approval panel, evidence, execution results), assets
-  - [ ] UI renders all Approval Package fields; forwards messages; no business logic
-  - [ ] `core/renderer/` + `data/templates/` Jinja2 templates
-  - [ ] `data/fixtures/expected_outputs/` golden packages (both fixtures)
-  - [ ] `README.md` + `data/fixtures/meeting_packages/README.md`
+  - [x] `frontend/`: app, `pages/chat.py`, `components/renderers.py`, `api_client.py`, assets (root-level, sibling of `backend/`)
+  - [x] UI renders all Approval Package fields + execution results; forwards messages over HTTP; no business logic
+  - [x] `backend/core/renderer/` + `data/templates/` Jinja2 templates (approval_package, execution)
+  - [x] `data/fixtures/expected_outputs/` golden packages (approval + operations, both fixtures)
+  - [x] `README.md` + `data/fixtures/meeting_packages/README.md`
+  - [x] `SessionView.messages` (additive) surfaces the chat transcript
 - **Checklist:**
-  - [ ] UI renders all §8.2 fields; contains no business logic
-  - [ ] Approve / Modify / Unsupported demonstrable from UI
-  - [ ] E2E documented; both fixtures pass
-  - [ ] Golden expected outputs captured
-  - [ ] Demo-safe offline (fallback); live-LLM run confirmed separately
-  - [ ] `pytest` green
+  - [x] UI renders all §8.2 fields; contains no business logic (pure HTTP client + injected for tests)
+  - [x] Approve / Modify / Unsupported demonstrable from UI (handler tests + smokes)
+  - [x] E2E documented (README); both fixtures pass (strong→move_forward, borderline→hold)
+  - [x] Golden expected outputs captured + regression test (timestamps stripped)
+  - [x] Demo-safe offline (fallback); real uvicorn HTTP path verified; live-LLM confirmed in earlier phases
+  - [x] `pytest` green (87 passed) + `ruff` clean (backend + frontend)
 - **Blockers:** None
-- **Notes:**
+- **Notes:** UI is a pure HTTP client of the FastAPI backend; rendering lives in
+  `backend/core/renderer` (Jinja2). Gradio telemetry disabled (no external calls
+  offline). Verified against the real app via `TestClient` and a live uvicorn TCP
+  server. **Review-driven refinements** (also in this phase): recommendation moved
+  into the chat with the right panel repurposed to an "Internal Processing &
+  Memory" view; evidence citations now carry backfilled quotes (self-resolving);
+  a **live per-node progress tracker** for slow cloud runs (UI polls
+  `GET /sessions/{id}`, which reads live checkpointer state; `LLM_TIMEOUT_SECONDS`
+  raised to 150 to avoid a needless timeout+retry); and **modifications now apply
+  the human's instruction** (the reviewer's request is injected into the
+  resume-target node's prompt). 92 tests pass, ruff clean; verified live in cloud.
+
+---
+
+## Final Readiness Checklist (product_requirements.md §13)
+
+All six MVP success criteria are demonstrated end to end:
+
+- [x] **End-to-end workflow execution** — Meeting Package → Operations + Approval Package → approval → mock execution → complete (offline and live).
+- [x] **Explainable reasoning** — every node emits an inspectable artifact; the chat narrates each stage.
+- [x] **Evidence-backed recommendations** — findings/decision carry `evidence_refs`; a grounding validator rejects ungrounded output (`test_evidence_enforcement`).
+- [x] **Human approval before execution** — the graph interrupts at `WAIT_FOR_HUMAN`; no adapter runs without an Approve intent.
+- [x] **Stateful workflow management** — per-`meeting_id` isolated LangGraph state with interrupt/resume; session isolation tested.
+- [x] **Operational artifact generation** — Operations Package (internal) + Approval Package (source of truth), persisted under `data/runtime/`.
+- [x] **Mock downstream execution** — ATS / email / Teams adapters simulate + log; failure path modelled.
+
+**Test suite:** 87 passing, offline, no network. **Lint:** ruff clean.
 
 ---
 
@@ -205,3 +232,6 @@ new phase until the previous one is approved by the user.
 | 2026-07-03 | 3 | Reviewed and approved; committed as Phase 3. |
 | 2026-07-03 | 4 | Platform integration implemented: FastAPI gateway (create_app + lifespan), hiring router (start/resume/get/list) + health + pluggable agent stubs (501), Watchdog File Watcher (input→processing→completed), HiringSessionService + generic SessionRegistry/persistence. 76 tests (TestClient) pass, ruff clean; live Observer + API smokes verified. Status IN REVIEW pending user sign-off. |
 | 2026-07-03 | 4 | Reviewed and approved; committed as Phase 4. |
+| 2026-07-03 | 5 | Final phase implemented: Gradio Teams-chat UI (root `frontend/`, pure HTTP client), `backend/core/renderer` + Jinja2 templates, `SessionView.messages`, golden expected outputs + regression test, README + fixtures README. 87 tests pass, ruff clean; UI verified via TestClient and a live uvicorn server. Final Readiness Checklist ticked. Status IN REVIEW pending user sign-off. |
+| 2026-07-03 | 5 | Review-driven UI/UX refinements: chat-first recommendation + "Internal Processing & Memory" panel; evidence citations carry backfilled quotes; live per-node progress tracker (UI polls checkpointer state) + LLM_TIMEOUT_SECONDS→150; modifications now apply the reviewer's instruction (revision injected into the resume-target prompt). 92 tests pass, ruff clean; fallback + live cloud verified end-to-end. |
+| 2026-07-03 | 5 | Reviewed and approved; committed as Phase 5 — MVP complete. |

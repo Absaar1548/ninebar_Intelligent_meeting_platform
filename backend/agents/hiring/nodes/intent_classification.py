@@ -38,9 +38,9 @@ def intent_classification_node(state: WorkflowState) -> dict:
         target = None
 
     msgs = list(state.get("messages", []))
-    msgs.append(Message(role="human", content=message))
+    msgs.append(Message(role="human", content=message, kind="chat"))
     label = intent.value + (f" -> {target}" if target else "")
-    msgs.append(Message(role="agent", content=f"Classified intent: {label}."))
+    msgs.append(Message(role="agent", content=f"Classified intent: {label}.", kind="internal"))
 
     updates: dict = {"intent": intent, "messages": msgs}
     if target:

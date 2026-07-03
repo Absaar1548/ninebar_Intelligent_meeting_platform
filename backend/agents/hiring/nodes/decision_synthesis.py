@@ -3,7 +3,11 @@ entry point in Phase 3."""
 
 from __future__ import annotations
 
-from backend.agents.hiring.nodes.base import get_llm_client, with_message
+from backend.agents.hiring.nodes.base import (
+    get_llm_client,
+    revision_for,
+    with_message,
+)
 from backend.agents.hiring.prompts.base import SYSTEM_PROMPT
 from backend.agents.hiring.prompts.reasoning import decision_synthesis_prompt
 from backend.agents.hiring.services.evidence import validate_decision_grounded
@@ -18,8 +22,9 @@ def decision_synthesis_node(state: WorkflowState) -> dict:
     assessment = state["assessment"]
     findings = state["findings"]
     graph = state["evidence_graph"]
+    revision = revision_for(state, "decision_synthesis")
     decision = get_llm_client().generate_structured(
-        decision_synthesis_prompt(assessment, findings, graph),
+        decision_synthesis_prompt(assessment, findings, graph, revision=revision),
         Decision,
         system=SYSTEM_PROMPT,
         fallback_fn=lambda: fallback_decision(mp, assessment, findings, graph),

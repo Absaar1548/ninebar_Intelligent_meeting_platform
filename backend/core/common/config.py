@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     # --- LLM behaviour ---
     llm_mode: Literal["cloud", "fallback"] = "cloud"
     llm_fallback_enabled: bool = True
-    llm_timeout_seconds: int = 60
+    llm_timeout_seconds: int = 150
     llm_max_retries: int = 2
     llm_retry_backoff_seconds: float = 2.0
 
