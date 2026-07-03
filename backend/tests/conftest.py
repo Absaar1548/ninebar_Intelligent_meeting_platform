@@ -7,6 +7,7 @@ the network, and gives each test a fresh compiled graph (fresh checkpointer).
 from __future__ import annotations
 
 import pytest
+from fastapi.testclient import TestClient
 
 from backend.agents.hiring.nodes import set_llm_client
 from backend.agents.hiring.workflow import reset_hiring_app
@@ -27,5 +28,16 @@ def offline_llm():
     reset_hiring_app()
 
 
+@pytest.fixture
+def api_client() -> TestClient:
+    from backend.api.main import create_app
+
+    return TestClient(create_app(enable_watcher=False))
+
+
 def load_meeting(name: str) -> MeetingPackage:
     return MeetingPackage.model_validate(read_json(FIXTURES / f"meeting_package_{name}.json"))
+
+
+def meeting_dict(name: str) -> dict:
+    return read_json(FIXTURES / f"meeting_package_{name}.json")

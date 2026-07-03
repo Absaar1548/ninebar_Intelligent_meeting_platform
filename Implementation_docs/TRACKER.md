@@ -18,7 +18,7 @@ new phase until the previous one is approved by the user.
 | 1 | Foundations: Contracts, Config, LLM + Deterministic Fallback | DONE | 100% |
 | 2 | LangGraph Reasoning Pipeline (→ WAIT_FOR_HUMAN) | DONE | 100% |
 | 3 | Human-in-the-Loop: Intent, Approve/Modify/Unsupported, Mock Execution | DONE | 100% |
-| 4 | Platform Integration: FastAPI, Router, Watcher, Sessions | NOT STARTED | 0% |
+| 4 | Platform Integration: FastAPI, Router, Watcher, Sessions | DONE | 100% |
 | 5 | Gradio UI + End-to-End Validation + Docs | NOT STARTED | 0% |
 
 > Phase 0 is the bootstrap/planning task (this deliverable). Phases 1–5 are the
@@ -144,24 +144,29 @@ new phase until the previous one is approved by the user.
 
 ## Phase 4 — Platform Integration: FastAPI, Router, Watcher, Sessions
 
-- **Status:** NOT STARTED
-- **Progress:** 0%
+- **Status:** DONE (reviewed and approved; committed as Phase 4)
+- **Progress:** 100%
 - **Deliverables:**
-  - [ ] `api/`: main, dependencies, middleware
-  - [ ] `api/routes/`: health, hiring (start/resume/get-state); stub engineering/sales/customer_success routers
-  - [ ] `core/watcher/`: Watchdog handler → session trigger; input→processing move
-  - [ ] Session manager: per-`meeting_id` isolated state; persist operations + approval packages; move to completed; logs
-  - [ ] Event emission in specified order
+  - [x] `api/`: main (`create_app` + lifespan), dependencies, middleware, models
+  - [x] `api/routes/`: health, hiring (start/resume/get/list); stub engineering/sales/customer_success routers (501)
+  - [x] `core/watcher/`: Watchdog handler + observer + `run` entrypoint; input→processing move
+  - [x] Session mgmt: `HiringSessionService` (per-`meeting_id` session) + generic `SessionRegistry`; persist operations + approval packages; move to completed
+  - [x] `MeetingPackageCreated` emitted at ingestion; §15.1 events flow through the run/execution engines
 - **Checklist:**
-  - [ ] Hiring endpoints: start, resume(message), get-state
-  - [ ] Health endpoint ok
-  - [ ] Watcher detects file, moves + persists + completes
-  - [ ] Session isolation verified with both fixtures
-  - [ ] Stub routers prove pluggability (no platform change)
-  - [ ] Events logged in order (§15.1)
-  - [ ] `pytest` + scripted API E2E pass (fallback mode)
+  - [x] Hiring endpoints: start, resume(message), get, list
+  - [x] Health endpoint ok
+  - [x] Watcher detects file, moves + persists + completes (live Observer verified, not just handler)
+  - [x] Session isolation verified with both fixtures (independent stages/artifacts)
+  - [x] Stub routers prove pluggability (501; no platform change)
+  - [x] Events logged in order (§15.1)
+  - [x] `pytest` (TestClient) green (76 passed) + `ruff` clean
 - **Blockers:** None
-- **Notes:**
+- **Notes:** A session is a checkpointer thread (`session_id_for(meeting_id)`);
+  the compiled app singleton + InMemorySaver persist state across HTTP requests.
+  Watcher triggers the session **in-process** (`create_app(enable_watcher=False)`
+  keeps tests observer-free; guarded by `ENABLE_FILE_WATCHER`). Layering kept
+  clean: generic session/persistence in `core/workflow/session.py`, hiring
+  orchestration in `agents/hiring/session.py`, thin router in `api/`.
 
 ---
 
@@ -198,3 +203,5 @@ new phase until the previous one is approved by the user.
 | 2026-07-03 | 2 | Reviewed and approved; committed as Phase 2. |
 | 2026-07-03 | 3 | Human-in-the-loop implemented: intent classification (LLM + keyword fallback), Approve→mock execution→END, Modify→resume at earliest affected node, Unsupported→stay waiting; mock execution engine (ats/email/teams, simulate+log, failure injection); `resume()` via Command(update). 62 tests, ruff clean; offline approve/modify/unsupported + live intent verified. Status IN REVIEW pending user sign-off. |
 | 2026-07-03 | 3 | Reviewed and approved; committed as Phase 3. |
+| 2026-07-03 | 4 | Platform integration implemented: FastAPI gateway (create_app + lifespan), hiring router (start/resume/get/list) + health + pluggable agent stubs (501), Watchdog File Watcher (input→processing→completed), HiringSessionService + generic SessionRegistry/persistence. 76 tests (TestClient) pass, ruff clean; live Observer + API smokes verified. Status IN REVIEW pending user sign-off. |
+| 2026-07-03 | 4 | Reviewed and approved; committed as Phase 4. |

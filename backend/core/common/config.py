@@ -61,6 +61,11 @@ class Settings(BaseSettings):
     runtime_logs_dir: Path = REPO_ROOT / "data" / "runtime" / "logs"
     hiring_tracker_path: Path = REPO_ROOT / "data" / "hiring_tracker.json"
 
+    # --- File Watcher ---
+    # When true, the FastAPI app starts the Watchdog File Watcher on the input
+    # directory at startup. Disabled by tests via the create_app factory.
+    enable_file_watcher: bool = True
+
     # --- Mock execution ---
     # Name of an adapter ("ats" | "email" | "teams") to force-fail, so the
     # execution-failure path can be exercised. Empty = all adapters succeed.
