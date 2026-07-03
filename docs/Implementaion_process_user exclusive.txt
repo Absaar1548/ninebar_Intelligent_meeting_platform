@@ -18,3 +18,36 @@ The current phase is setting up the project foundation, including the folder str
 **Step 1 — Completed:** Using Claude Code as the implementation agent, I completed repository initialization and planning. Claude Code read the approved source documents (`product_requirements.md`, `system_architecture.md`, `system_flow.md`) and `AGENTS.md`, analyzed the mock meeting packages, hiring tracker, and candidate profiles, then produced the engineering plan under `Implementation_docs/` — `MASTER_IMPLEMENTATION.md` (system overview, component breakdown, dependency graph, risks, validation strategy, and per-phase specs) and `TRACKER.md` (living tracker, all phases NOT STARTED). It also bootstrapped the repo (`.venv` created without installing packages, `requirements.txt`, `.env.example`, `.gitignore`) and appended an Implementation Workflow section to `AGENTS.md`. The work is broken into five reviewable implementation phases. No application code was written in this step.
 
 **Step 2:** Begin phase-by-phase implementation — draft a plan for each phase in plan mode, review it, then execute only after approval.
+
+**Step 3 — Completed:** With all five implementation phases finished and the
+MVP working end to end, I shifted focus to packaging and portability so the
+project can be evaluated with minimal setup. Using Claude Code as the
+implementation agent, I had the application containerized as a single Docker
+image that runs both the FastAPI backend and the Gradio UI. The image defaults
+to the deterministic offline ("Mock") reasoner, so it starts and completes a
+full session with no API key and no network. I reviewed the setup and had the
+container build files consolidated under a `docker/` folder (`docker/Dockerfile`,
+`docker/entrypoint.sh`), keeping `.dockerignore` and `.gitattributes` at the repo
+root where they belong.
+
+**Step 4 — Completed:** To let a reviewer optionally try live reasoning
+without being tied to a single vendor, I asked for the LLM layer to be made
+provider-switchable at runtime from the UI. The result is a single "Provider"
+control — Mock (default), Ollama Cloud, or Azure OpenAI — surfaced in an
+"LLM Settings" panel. Selecting a provider and applying it calls a backend
+endpoint that rebuilds the LLM client; any API key is entered in the UI and held
+in memory only (never written to disk or logged, and only ever reported back
+masked). This respected the existing architecture — the provider abstraction was
+already present, so no redesign was needed — and all reasoning/business logic
+stayed in the backend, with the UI only forwarding the selection. The change is
+covered by tests (a new Azure provider unit test and an LLM config API test), and
+the full suite stays green with the linter clean.
+
+**Delivery:** For evaluation I chose to share the repository so the reviewer
+needs only Docker: they clone the repo and run
+`docker build -f docker/Dockerfile -t hiring-agent .` followed by
+`docker run -p 7860:7860 -p 8000:8000 hiring-agent`, then open the UI at
+`http://localhost:7860`. It runs offline in Mock mode by default; switching to
+Ollama or Azure is optional and done entirely from the UI. The README and
+`.env.example` document the providers, the Azure configuration keys, and the
+in-memory key handling.
