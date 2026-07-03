@@ -18,6 +18,7 @@ from backend.api.routes import (
     engineering,
     health,
     hiring,
+    llm_config,
     sales,
 )
 from backend.core.common.config import get_settings
@@ -56,6 +57,7 @@ def create_app(enable_watcher: bool | None = None) -> FastAPI:
 
     app.include_router(health.router)
     app.include_router(hiring.router)
+    app.include_router(llm_config.router)
     app.include_router(engineering.router)
     app.include_router(sales.router)
     app.include_router(customer_success.router)

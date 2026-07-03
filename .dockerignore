@@ -1,0 +1,31 @@
+# Docker build-context ignore rules. This file stays at the repo root because
+# Docker resolves .dockerignore against the BUILD CONTEXT (repo root), not the
+# Dockerfile location (docker/Dockerfile). Build: docker build -f docker/Dockerfile .
+
+# Version control & Python caches
+.git/
+.gitignore
+.gitattributes
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Local virtualenv (the image builds its own from requirements.lock)
+.venv/
+
+# Secrets & local env — never bake into the image
+.env
+.env.local
+
+# Runtime state — created at container start; mount a volume for persistence
+data/runtime/
+
+# Not needed inside the runtime image
+backend/tests/
+conftest.py
+docs/
+Implementation_docs/
+candidate_profile/
+data/fixtures/expected_outputs/
+.claude/

@@ -37,6 +37,21 @@ log = get_logger(__name__)
 FallbackFn = Callable[[], "BaseModel | dict | str"]
 
 
+def build_provider(settings: Settings) -> LLMProvider:
+    """Select the cloud transport for ``settings.llm_provider``.
+
+    Imports are lazy so ``fallback`` mode never pulls in ``httpx``/provider code,
+    and adding a provider stays a one-line change here (providers are swappable).
+    """
+    if settings.llm_provider == "azure_openai":
+        from backend.core.llm.azure_openai_provider import AzureOpenAIProvider
+
+        return AzureOpenAIProvider(settings)
+    from backend.core.llm.ollama_provider import OllamaProvider
+
+    return OllamaProvider(settings)
+
+
 def _strip_fences(text: str) -> str:
     """Remove Markdown code fences the model may wrap JSON in."""
     t = text.strip()
@@ -70,10 +85,7 @@ class LLMClient:
         if self._injected_provider is not None:
             return self._injected_provider
         if self._cached_provider is None:
-            # Imported lazily so ``fallback`` mode never requires httpx/config.
-            from backend.core.llm.ollama_provider import OllamaProvider
-
-            self._cached_provider = OllamaProvider(self._settings)
+            self._cached_provider = build_provider(self._settings)
         return self._cached_provider
 
     # -- public API -------------------------------------------------------

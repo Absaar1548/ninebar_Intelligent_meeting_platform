@@ -73,18 +73,35 @@ pip install -r requirements.txt          # or requirements.lock for exact pins
 cp .env.example .env                      # PowerShell: Copy-Item .env.example .env
 ```
 
-Edit `.env` and set `OLLAMA_API_KEY` for live reasoning (the only real secret).
-`.env` is gitignored.
+Edit `.env` and set an LLM key for live reasoning (`OLLAMA_API_KEY` or, for
+Azure, `AZURE_OPENAI_API_KEY` — the only real secrets). `.env` is gitignored.
 
 ### LLM modes
 
 | `LLM_MODE` | Behaviour |
 |---|---|
-| `cloud` (default) | Reasoning nodes call the Ollama Cloud API; each output is schema-validated with bounded retry. On failure they **degrade to the deterministic fallback** (`LLM_FALLBACK_ENABLED=true`). |
-| `fallback` | No network: a deterministic, rule-based reasoner runs the whole pipeline. Used for offline dev, CI, and demos. |
+| `fallback` (default) | No network: a deterministic, rule-based reasoner runs the whole pipeline — the UI's **Mock** provider. Used for offline dev, CI, and demos. |
+| `cloud` | Reasoning nodes call the cloud LLM (see providers below); each output is schema-validated with bounded retry. On failure they **degrade to the deterministic mock** (`LLM_FALLBACK_ENABLED=true`). |
 
 Every node has a deterministic fallback, so the system runs end-to-end with **no
 key and no network**.
+
+### LLM providers
+
+The UI's **Provider** control is the single knob — pick one of:
+
+| Provider | Meaning | Config keys |
+|---|---|---|
+| **Mock** (default) | Deterministic offline reasoner (`LLM_MODE=fallback`) | none — no key/network |
+| Ollama Cloud | Live reasoning via Ollama Cloud (`LLM_PROVIDER=ollama`) | `OLLAMA_HOST`, `OLLAMA_MODEL`, `OLLAMA_API_KEY` |
+| Azure OpenAI | Live reasoning via Azure OpenAI (`LLM_PROVIDER=azure_openai`) | `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_DEPLOYMENT`, `AZURE_OPENAI_API_VERSION`, `AZURE_OPENAI_API_KEY` |
+
+You don't have to restart to change any of this: the UI's **⚙️ LLM Settings**
+panel (right column) lets you pick the provider, paste a key, and **Apply** — the
+backend rebuilds its LLM client and the next session uses it. **Mock** is the
+default, so the app is useful with no key at all. Keys entered in the panel are
+held **in memory only** (never written to disk or logged, and reset on restart);
+`.env` / `-e VAR` remains the persistent path.
 
 ## Running
 
@@ -124,6 +141,55 @@ curl -X POST localhost:8000/api/v1/agents/hiring/sessions/<id>/messages \
 
 Runtime artifacts are written under `data/runtime/` (`operations/`, `approvals/`,
 `logs/`); processed input files move `input → processing → completed`.
+
+### Run with Docker
+
+One image runs **both** the backend and the UI. It defaults to
+`LLM_MODE=fallback`, so it starts offline with **no API key** — ideal for a quick
+run on any machine with Docker.
+
+The build files live in [`docker/`](docker/); build from the repo root so the
+context can reach `backend/`, `frontend/`, and `data/`:
+
+```bash
+docker build -f docker/Dockerfile -t hiring-agent .
+docker run --rm -p 7860:7860 -p 8000:8000 hiring-agent
+# open http://localhost:7860   (API at http://localhost:8000)
+```
+
+Live LLM reasoning — pass the key and switch modes (or just set it in the UI's
+**⚙️ LLM Settings** panel at runtime):
+
+```bash
+# Ollama Cloud
+docker run --rm -p 7860:7860 -p 8000:8000 \
+  -e LLM_MODE=cloud -e OLLAMA_API_KEY=your-ollama-cloud-key \
+  hiring-agent
+
+# Azure OpenAI
+docker run --rm -p 7860:7860 -p 8000:8000 \
+  -e LLM_MODE=cloud -e LLM_PROVIDER=azure_openai \
+  -e AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com \
+  -e AZURE_OPENAI_DEPLOYMENT=your-deployment \
+  -e AZURE_OPENAI_API_VERSION=2024-10-21 \
+  -e AZURE_OPENAI_API_KEY=your-azure-key \
+  hiring-agent
+
+# or:  docker run --rm -p 7860:7860 -p 8000:8000 --env-file .env hiring-agent
+```
+
+Persist runtime artifacts / drop packages in via the File Watcher by mounting a
+host directory onto the runtime tree:
+
+```bash
+docker run --rm -p 7860:7860 -p 8000:8000 \
+  -v "$(pwd)/data/runtime:/app/data/runtime" hiring-agent
+# copy a Meeting Package into ./data/runtime/input to trigger a session
+```
+
+**Ship to another device:** `docker save hiring-agent | gzip > hiring-agent.tgz`,
+copy it over, then `docker load < hiring-agent.tgz` and `docker run …` — no
+rebuild, no Python, no key required (fallback mode).
 
 ## Testing
 

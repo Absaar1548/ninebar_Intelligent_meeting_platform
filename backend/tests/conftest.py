@@ -14,6 +14,7 @@ from backend.agents.hiring.workflow import reset_hiring_app
 from backend.core.common.config import REPO_ROOT, Settings
 from backend.core.common.json_io import read_json
 from backend.core.llm.client import LLMClient
+from backend.core.llm.runtime import reset_llm_runtime
 from backend.schemas.meeting_package import MeetingPackage
 
 FIXTURES = REPO_ROOT / "data" / "fixtures" / "meeting_packages"
@@ -24,7 +25,10 @@ def offline_llm():
     set_llm_client(LLMClient(settings=Settings(llm_mode="fallback")))
     reset_hiring_app()
     yield
+    # Reset both the shared client and the runtime config singleton so a config
+    # test that swaps them never leaks into the next test.
     set_llm_client(None)
+    reset_llm_runtime()
     reset_hiring_app()
 
 

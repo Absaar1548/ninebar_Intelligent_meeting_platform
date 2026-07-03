@@ -87,3 +87,22 @@ def status_line(view: dict) -> str:
     else:
         tail = "⏳ working…"
     return f"**Stage:** `{stage}` — {tail}"
+
+
+_PROVIDER_LABEL = {"ollama": "Ollama Cloud", "azure_openai": "Azure OpenAI"}
+
+
+def llm_status_line(cfg: dict) -> str:
+    """One-line summary of the effective LLM config (masked — no secrets)."""
+    provider = cfg.get("provider", "mock")
+    if provider == "mock" or cfg.get("mode") == "fallback":
+        return "**LLM:** `mock` — deterministic, offline (no key or network)"
+    label = _PROVIDER_LABEL.get(provider, provider)
+    if provider == "azure_openai":
+        key_set = cfg.get("azure_key_set")
+        target = cfg.get("azure_deployment") or "—"
+    else:
+        key_set = cfg.get("ollama_key_set")
+        target = cfg.get("ollama_model") or "—"
+    badge = "key ✅" if key_set else "key ❌ (missing)"
+    return f"**LLM:** `cloud` · {label} · `{target}` · {badge}"

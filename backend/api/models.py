@@ -6,7 +6,7 @@ directly; these DTOs only wrap the transport surface.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -71,3 +71,41 @@ class SessionView(BaseModel):
             operations_package=_dump(values.get("operations_package")),
             messages=_as_chat(values.get("messages")),
         )
+
+
+class LLMConfigView(BaseModel):
+    """Masked, non-secret view of the effective LLM configuration.
+
+    Never carries a key — only booleans for whether each provider's key is set.
+    """
+
+    model_config = ConfigDict(extra="ignore")
+
+    mode: str
+    provider: str
+    ollama_model: str
+    ollama_host: str
+    azure_endpoint: str
+    azure_deployment: str
+    azure_api_version: str
+    ollama_key_set: bool
+    azure_key_set: bool
+
+
+class LLMConfigUpdate(BaseModel):
+    """Partial LLM-config change from the UI. All fields optional; a blank/omitted
+    value leaves the current setting untouched (so a key need not be re-typed)."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    mode: Literal["cloud", "fallback"] | None = None
+    # "mock" = deterministic offline reasoner (maps to fallback mode); the cloud
+    # providers are "ollama" and "azure_openai".
+    provider: Literal["mock", "ollama", "azure_openai"] | None = None
+    ollama_model: str | None = None
+    ollama_host: str | None = None
+    ollama_api_key: str | None = None
+    azure_endpoint: str | None = None
+    azure_deployment: str | None = None
+    azure_api_version: str | None = None
+    azure_api_key: str | None = None

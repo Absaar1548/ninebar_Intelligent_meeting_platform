@@ -1,0 +1,4 @@
+# Git attributes stay at the repo root (this is a git file, not a container file).
+# Shell scripts must use LF so they run inside Linux containers.
+*.sh text eol=lf
+docker/entrypoint.sh text eol=lf
