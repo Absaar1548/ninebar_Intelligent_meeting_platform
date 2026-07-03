@@ -84,12 +84,17 @@ class LLMClient:
         *,
         fallback_fn: FallbackFn | None = None,
         system: str | None = None,
+        validate: Callable[[_M], None] | None = None,
     ) -> _M:
         """Return a validated instance of ``schema``.
 
         In ``fallback`` mode the network is never touched. In ``cloud`` mode the
         provider is retried up to ``llm_max_retries`` times with the validation
         error fed back; on exhaustion it degrades to the fallback when enabled.
+
+        ``validate`` is an optional semantic check (e.g. evidence grounding)
+        applied to the parsed object; raising from it triggers the same
+        retry-with-feedback path as a schema failure.
         """
         if self._settings.llm_mode == "fallback":
             return self._from_fallback(schema, fallback_fn)
@@ -109,8 +114,11 @@ class LLMClient:
             else:
                 try:
                     obj = json.loads(_strip_fences(raw))
-                    return schema.model_validate(obj)
-                except (json.JSONDecodeError, ValidationError) as exc:
+                    result = schema.model_validate(obj)
+                    if validate is not None:
+                        validate(result)  # semantic check (e.g. grounding)
+                    return result
+                except (json.JSONDecodeError, ValidationError, ValueError) as exc:
                     last_error = exc
                     log.warning(
                         "LLM output invalid (attempt %d/%d): %s",

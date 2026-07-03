@@ -16,7 +16,7 @@ new phase until the previous one is approved by the user.
 |---|---|---|---|
 | 0 | Repository Bootstrap & Planning | DONE | 100% |
 | 1 | Foundations: Contracts, Config, LLM + Deterministic Fallback | DONE | 100% |
-| 2 | LangGraph Reasoning Pipeline (→ WAIT_FOR_HUMAN) | NOT STARTED | 0% |
+| 2 | LangGraph Reasoning Pipeline (→ WAIT_FOR_HUMAN) | DONE | 100% |
 | 3 | Human-in-the-Loop: Intent, Approve/Modify/Unsupported, Mock Execution | NOT STARTED | 0% |
 | 4 | Platform Integration: FastAPI, Router, Watcher, Sessions | NOT STARTED | 0% |
 | 5 | Gradio UI + End-to-End Validation + Docs | NOT STARTED | 0% |
@@ -83,27 +83,32 @@ new phase until the previous one is approved by the user.
 
 ## Phase 2 — LangGraph Reasoning Pipeline (→ WAIT_FOR_HUMAN)
 
-- **Status:** NOT STARTED
-- **Progress:** 0%
+- **Status:** DONE (reviewed and approved; committed as Phase 2)
+- **Progress:** 100%
 - **Deliverables:**
-  - [ ] `agents/hiring/models.py` (InterviewContext, EvidenceGraph, Findings, Assessment, Decision, ActionPlan, Drafts)
-  - [ ] `agents/hiring/nodes/` — 10 linear nodes (Context Validation → Approval Package Generation)
-  - [ ] `agents/hiring/prompts/` — one prompt per LLM node
-  - [ ] `agents/hiring/services/` — operations + approval package generators, evidence enforcement
-  - [ ] `agents/hiring/workflow.py` — StateGraph to interrupt at WAIT_FOR_HUMAN
-  - [ ] `core/workflow/` — checkpointer, stage transitions, retry integration
-  - [ ] Dev runner to execute a fixture to interrupt
+  - [x] `agents/hiring/models.py` (re-exports Phase 1 artifact contracts + `TrackerContext`)
+  - [x] `agents/hiring/nodes/` — 10 linear nodes + `base` (Context Validation → Approval Package Generation)
+  - [x] `agents/hiring/prompts/` — `base` (schema/enum embedder) + `reasoning` (7 per-node builders)
+  - [x] `agents/hiring/services/` — `fallbacks` (rule-based reasoner), `evidence` (graph + grounding), operations + approval package builders
+  - [x] `agents/hiring/workflow.py` — StateGraph compiled with `interrupt_before=["wait_for_human"]`; `run_to_interrupt`
+  - [x] `core/workflow/` — `checkpointer` (InMemorySaver) + `engine` (run-to-interrupt + §15.1 events)
+  - [x] `agents/hiring/dev_runner.py` — offline fixture runner
 - **Checklist:**
-  - [ ] Node order/names match Diagram 3 / §7 (no renames)
-  - [ ] Each node sets `workflow_stage` per Appendix B
-  - [ ] Evidence-first enforced (ungrounded → regenerated)
-  - [ ] Interrupt fires at WAIT_FOR_HUMAN; state persists
-  - [ ] Full pipeline runs offline (`LLM_MODE=fallback`)
-  - [ ] Strong ≠ borderline outcome
-  - [ ] Malformed / empty-transcript package → Rejected
-  - [ ] `pytest` green
+  - [x] Node order/names match Diagram 3 / §7 (no renames)
+  - [x] Each node sets `workflow_stage` per Appendix B
+  - [x] Evidence-first enforced (grounding validator + `validate=` retry hook → regenerated)
+  - [x] Interrupt fires at WAIT_FOR_HUMAN; state persists (`next == ('wait_for_human',)`)
+  - [x] Full pipeline runs offline (`LLM_MODE=fallback`) — no network
+  - [x] Strong ≠ borderline (move_forward@0.81 vs hold@0.54)
+  - [x] Malformed / empty-transcript package → Rejected (terminal, no reasoning)
+  - [x] `pytest` green (38 passed) + `ruff` clean
 - **Blockers:** None
-- **Notes:**
+- **Notes:** Checkpoint serialization of Pydantic artifacts verified up front (spike) —
+  stored directly in state, no dict workaround. Live `LLM_MODE=cloud` full-pipeline
+  run also passed (7/7 reasoning nodes validated first try; grounded reasoning citing
+  real evidence ids). Prompt builders consolidated into `prompts/reasoning.py`
+  (7 functions) rather than 7 files. `wait_for_human` is a Phase-3 placeholder;
+  the edge to END is provisional.
 
 ---
 
@@ -182,3 +187,6 @@ new phase until the previous one is approved by the user.
 |---|---|---|
 | 2026-07-02 | 0 | Planning + bootstrap complete; tracker initialized; all implementation phases NOT STARTED. |
 | 2026-07-03 | 1 | Foundations implemented: schemas (incl. `HiringTracker` for the mock ATS), config, common utils, LLM client + deterministic fallback; deps installed + locked; 16 tests pass, ruff clean; all 3 `data/` files validate. Status IN REVIEW pending user sign-off. |
+| 2026-07-03 | 1 | Reviewed and approved; committed as Phase 1 (`56e11c2`). |
+| 2026-07-03 | 2 | Reasoning pipeline implemented: 10 LangGraph nodes (deterministic + LLM-with-fallback), evidence-first grounding, Operations/Approval package builders, graph compiled with interrupt at WAIT_FOR_HUMAN. Offline strong≠borderline (move_forward vs hold) and live cloud pipeline both pass; 38 tests, ruff clean. Status IN REVIEW pending user sign-off. |
+| 2026-07-03 | 2 | Reviewed and approved; committed as Phase 2. |
