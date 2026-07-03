@@ -17,7 +17,7 @@ new phase until the previous one is approved by the user.
 | 0 | Repository Bootstrap & Planning | DONE | 100% |
 | 1 | Foundations: Contracts, Config, LLM + Deterministic Fallback | DONE | 100% |
 | 2 | LangGraph Reasoning Pipeline (→ WAIT_FOR_HUMAN) | DONE | 100% |
-| 3 | Human-in-the-Loop: Intent, Approve/Modify/Unsupported, Mock Execution | NOT STARTED | 0% |
+| 3 | Human-in-the-Loop: Intent, Approve/Modify/Unsupported, Mock Execution | DONE | 100% |
 | 4 | Platform Integration: FastAPI, Router, Watcher, Sessions | NOT STARTED | 0% |
 | 5 | Gradio UI + End-to-End Validation + Docs | NOT STARTED | 0% |
 
@@ -114,25 +114,31 @@ new phase until the previous one is approved by the user.
 
 ## Phase 3 — Human-in-the-Loop: Intent, Approve/Modify/Unsupported, Mock Execution
 
-- **Status:** NOT STARTED
-- **Progress:** 0%
+- **Status:** DONE (reviewed and approved; committed as Phase 3)
+- **Progress:** 100%
 - **Deliverables:**
-  - [ ] `agents/hiring/nodes/`: intent_classification, approve, modify, unsupported, mock_execution
-  - [ ] Intent classifier + deterministic keyword fallback; `modification_target` mapping (§12)
-  - [ ] Modification resume (earliest affected node; downstream-only regen)
-  - [ ] `core/execution/`: ats, email, teams adapters + execution logger + failure modelling
-  - [ ] Graph edges: Approve→Exec→END; Modify→resume; Unsupported→WAIT
+  - [x] `agents/hiring/nodes/`: intent_classification, approve, modify, unsupported, mock_execution
+  - [x] Intent classifier LLM node + deterministic keyword fallback (`services/intent.py`); `modification_target` mapping (§12)
+  - [x] Modification resume (conditional edge → earliest affected node; downstream-only regen)
+  - [x] `core/execution/`: ats/email/teams adapters + engine (simulate + log + failure injection)
+  - [x] Graph edges: WAIT→intent; Approve→Exec→END; Modify→resume target; Unsupported→WAIT; `resume()` via `Command(update=...)`
+  - [x] Additive schemas: `execution.py`, `IntentClassification`, `execution_results` in state; `MOCK_EXECUTION_FAIL_ADAPTER` config
 - **Checklist:**
-  - [ ] Exactly one intent returned; ambiguous → Unsupported
-  - [ ] `modification_target` matches §12; unresolved → Unsupported
-  - [ ] Upstream artifacts unchanged after Modify; downstream regenerated
-  - [ ] Approve sets `approval_status="approved"` before execution
-  - [ ] Mock execution emits Started/Completed + logs; failure path modelled
-  - [ ] Keyword classifier works with LLM off
-  - [ ] Approve + Modify + Unsupported cycles pass offline
-  - [ ] `pytest` green
+  - [x] Exactly one intent returned; ambiguous / unresolved-target → Unsupported
+  - [x] `modification_target` matches §12; unresolved → Unsupported
+  - [x] Upstream artifacts unchanged after Modify; downstream regenerated
+  - [x] Approve sets `approval_status="approved"` before execution
+  - [x] Mock execution emits Started/Completed + writes log; failure path modelled (fail-injection test)
+  - [x] Keyword classifier works with LLM off (offline suite)
+  - [x] Approve + Modify + Unsupported cycles pass offline; modify→approve and unsupported→approve chains work
+  - [x] `pytest` green (62 passed) + `ruff` clean
 - **Blockers:** None
-- **Notes:**
+- **Notes:** Resume mechanic validated by a day-1 spike (`Command(update={human_feedback})`
+  resumes past `interrupt_before` and routes correctly). Mock execution is
+  **simulate + log only** (writes `data/runtime/logs/<meeting_id>.execution.json`;
+  `data/hiring_tracker.json` untouched). Live cloud intent classification also
+  verified (approve/modify-email/modify-recommendation/unsupported all routed
+  correctly).
 
 ---
 
@@ -190,3 +196,5 @@ new phase until the previous one is approved by the user.
 | 2026-07-03 | 1 | Reviewed and approved; committed as Phase 1 (`56e11c2`). |
 | 2026-07-03 | 2 | Reasoning pipeline implemented: 10 LangGraph nodes (deterministic + LLM-with-fallback), evidence-first grounding, Operations/Approval package builders, graph compiled with interrupt at WAIT_FOR_HUMAN. Offline strong≠borderline (move_forward vs hold) and live cloud pipeline both pass; 38 tests, ruff clean. Status IN REVIEW pending user sign-off. |
 | 2026-07-03 | 2 | Reviewed and approved; committed as Phase 2. |
+| 2026-07-03 | 3 | Human-in-the-loop implemented: intent classification (LLM + keyword fallback), Approve→mock execution→END, Modify→resume at earliest affected node, Unsupported→stay waiting; mock execution engine (ats/email/teams, simulate+log, failure injection); `resume()` via Command(update). 62 tests, ruff clean; offline approve/modify/unsupported + live intent verified. Status IN REVIEW pending user sign-off. |
+| 2026-07-03 | 3 | Reviewed and approved; committed as Phase 3. |

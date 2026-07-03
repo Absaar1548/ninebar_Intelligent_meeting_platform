@@ -61,6 +61,11 @@ class Settings(BaseSettings):
     runtime_logs_dir: Path = REPO_ROOT / "data" / "runtime" / "logs"
     hiring_tracker_path: Path = REPO_ROOT / "data" / "hiring_tracker.json"
 
+    # --- Mock execution ---
+    # Name of an adapter ("ats" | "email" | "teams") to force-fail, so the
+    # execution-failure path can be exercised. Empty = all adapters succeed.
+    mock_execution_fail_adapter: str = ""
+
     # --- Logging ---
     log_level: str = "INFO"
 

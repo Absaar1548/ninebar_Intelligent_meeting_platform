@@ -12,6 +12,7 @@ from backend.agents.hiring.prompts.base import (
     role_block,
     transcript_text,
 )
+from backend.schemas.approval_package import ApprovalPackage
 from backend.schemas.artifacts import (
     ActionPlan,
     Assessment,
@@ -19,6 +20,7 @@ from backend.schemas.artifacts import (
     Drafts,
     EvidenceGraph,
     Findings,
+    IntentClassification,
     InterviewContext,
 )
 from backend.schemas.meeting_package import MeetingPackage
@@ -127,4 +129,22 @@ def draft_generation_prompt(
             "Interview Context": ctx.model_dump_json(),
         },
         Drafts,
+    )
+
+
+def intent_classification_prompt(message: str, approval_package: ApprovalPackage) -> str:
+    return build_user_prompt(
+        "Classify the human's message into exactly one supported workflow intent. "
+        "Only operational intents are supported: 'approval' (approve/execute/"
+        "proceed), 'modification' (change the recommendation, action items, "
+        "tracker update, or email), or 'unsupported' (anything else). For a "
+        "modification, set modification_target to the earliest affected node: "
+        "'decision_synthesis' (recommendation), 'action_planning' (action/tracker), "
+        "or 'draft_generation' (email). If a modification target cannot be "
+        "resolved, classify as 'unsupported'.",
+        {
+            "Human message": message,
+            "Current recommendation": approval_package.recommendation.value,
+        },
+        IntentClassification,
     )

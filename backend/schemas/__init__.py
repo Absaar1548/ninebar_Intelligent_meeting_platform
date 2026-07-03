@@ -20,9 +20,11 @@ from backend.schemas.artifacts import (
     EvidenceRelationship,
     Finding,
     Findings,
+    IntentClassification,
     InterviewContext,
     TrackerUpdateProposal,
 )
+from backend.schemas.execution import ExecutionReport, ExecutionResult
 from backend.schemas.enums import (
     ActionType,
     ApprovalStatus,
@@ -87,6 +89,10 @@ __all__ = [
     "DraftEmail",
     "TrackerUpdateProposal",
     "Drafts",
+    # intent + execution
+    "IntentClassification",
+    "ExecutionResult",
+    "ExecutionReport",
     # packages
     "OperationsPackage",
     "ApprovalPackage",

@@ -11,7 +11,12 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from backend.schemas.enums import ActionType, EvidenceSourceType, Recommendation
+from backend.schemas.enums import (
+    ActionType,
+    EvidenceSourceType,
+    Intent,
+    Recommendation,
+)
 
 
 class ArtifactBaseModel(BaseModel):
@@ -139,3 +144,12 @@ class TrackerUpdateProposal(ArtifactBaseModel):
 class Drafts(ArtifactBaseModel):
     draft_email: DraftEmail | None = None
     tracker_update_proposal: TrackerUpdateProposal | None = None
+
+
+# --------------------------------------------------------------------------
+# Intent Classification (§7.12) — the sole gateway between human and workflow
+# --------------------------------------------------------------------------
+class IntentClassification(ArtifactBaseModel):
+    intent: Intent
+    modification_target: str | None = None  # resume node for a Modification
+    rationale: str = ""

@@ -26,6 +26,7 @@ from backend.schemas.artifacts import (
     InterviewContext,
 )
 from backend.schemas.enums import ExecutionStatus, Intent, WorkflowStage
+from backend.schemas.execution import ExecutionReport
 from backend.schemas.meeting_package import MeetingPackage
 from backend.schemas.operations_package import OperationsPackage
 
@@ -76,6 +77,7 @@ class WorkflowState(TypedDict, total=False):
     intent: Intent
     modification_target: str  # resume node for a Modification
     execution_status: ExecutionStatus
+    execution_results: ExecutionReport
 
     # Session bookkeeping
     messages: list[Message]
