@@ -1,0 +1,33 @@
+# One-command run for reviewers:  docker compose up
+# Builds the single image (FastAPI backend + Gradio UI) and runs it in Mock mode
+# — deterministic, offline, no API key required.
+services:
+  hiring-agent:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: hiring-agent:latest
+    ports:
+      - "7860:7860"   # Gradio UI      -> http://localhost:7860
+      - "8000:8000"   # FastAPI backend -> http://localhost:8000
+    environment:
+      LLM_MODE: fallback            # default: deterministic offline "Mock" reasoner
+      # --- Optional: live reasoning. Uncomment ONE block and fill in ---
+      # (or switch provider/paste a key at runtime in the UI's ⚙️ LLM Settings)
+      #
+      # Ollama Cloud:
+      # LLM_MODE: cloud
+      # LLM_PROVIDER: ollama
+      # OLLAMA_API_KEY: your-ollama-cloud-key
+      #
+      # Azure OpenAI:
+      # LLM_MODE: cloud
+      # LLM_PROVIDER: azure_openai
+      # AZURE_OPENAI_ENDPOINT: https://your-resource.openai.azure.com
+      # AZURE_OPENAI_DEPLOYMENT: your-deployment
+      # AZURE_OPENAI_API_VERSION: "2024-10-21"
+      # AZURE_OPENAI_API_KEY: your-azure-key
+    # Optional: persist runtime artifacts and drop Meeting Packages in via the
+    # File Watcher by mounting the runtime tree.
+    # volumes:
+    #   - ./data/runtime:/app/data/runtime

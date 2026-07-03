@@ -18,6 +18,48 @@ human approval** before simulating any downstream action.
 
 ---
 
+## Context & objective
+
+This is a work-simulation MVP: demonstrate how an **AI-native Hiring Operations
+Agent** consumes a standardized **Meeting Package** and performs *operational
+reasoning* over it — evidence-backed summary → recommendation → next actions →
+draft candidate email → **human approval** before any external action.
+
+- **Not** a meeting assistant or chatbot. It is a **workflow engine** that reasons
+  and acts under human control.
+- It is **one domain agent** inside a larger AI Operations Platform. The
+  architecture is intentionally **pluggable**: Engineering, Sales, Customer
+  Success, Executive-Ops, etc. can register alongside it with no redesign (see the
+  `501` stub routers under `/api/v1/agents/*`).
+- **Layer 1 (Meeting Intelligence — Zoom/Meet/Teams) is intentionally mocked.**
+  The system assumes a standardized Meeting Package already exists and focuses
+  entirely on **Layer 2 (the Hiring Operations Agent)**.
+
+**Users:** a hiring manager / recruiter who wants the agent to do the operational
+legwork (assess evidence, draft the email, prep tracker updates) but stays in
+control — nothing leaves the system without their approval.
+
+## Reviewer quick start
+
+No paid key or secret required — it runs on a deterministic **Mock** reasoner by
+default. One command:
+
+```bash
+docker compose up          # builds + runs; open http://localhost:7860
+```
+
+Then in the UI: pick a **Meeting Package** → **Start session** → read the agent's
+evidence-backed recommendation in chat → reply **approve** (runs mock execution),
+or *"rewrite the email …"* (modifies and re-presents), or anything off-topic
+(politely declined). Optional: switch to Ollama/Azure live reasoning in the
+**⚙️ LLM Settings** panel. Full checks: [Testing](#testing).
+
+See also **[AGENT_WORKFLOW.md](AGENT_WORKFLOW.md)** (how AI tools were used, and
+how to audit) and the steering artifact in
+[`docs/best_interaction_artifact.md`](docs/best_interaction_artifact.md).
+
+---
+
 ## Architecture at a glance
 
 ```
@@ -148,8 +190,14 @@ One image runs **both** the backend and the UI. It defaults to
 `LLM_MODE=fallback`, so it starts offline with **no API key** — ideal for a quick
 run on any machine with Docker.
 
-The build files live in [`docker/`](docker/); build from the repo root so the
-context can reach `backend/`, `frontend/`, and `data/`:
+Simplest — one command with Compose (builds + runs in Mock mode):
+
+```bash
+docker compose up          # open http://localhost:7860
+```
+
+Or build/run directly. The build files live in [`docker/`](docker/); build from
+the repo root so the context can reach `backend/`, `frontend/`, and `data/`:
 
 ```bash
 docker build -f docker/Dockerfile -t hiring-agent .
@@ -214,3 +262,54 @@ handlers, and a **golden** regression on the deterministic output.
 | Single implemented agent | Multiple domain agents (register a router — see the 501 stubs) |
 
 Simplifications replace **infrastructure only**; the architecture is unchanged.
+
+## Assumptions
+
+- A **standardized Meeting Package** already exists (Layer 1 is mocked); its
+  schema is the contract the agent reasons over.
+- **Sanitized/fake data only** — the bundled meeting packages, candidate profile,
+  and hiring tracker are illustrative, not real people.
+- **Single reviewer, no auth/multi-tenancy** — appropriate for an MVP; production
+  would add identity, RBAC, and audit.
+- Downstream systems (ATS, email, calendar, Teams) are **simulated** by mock
+  adapters that log what *would* happen.
+- One session per Meeting Package; state lives in an in-memory checkpointer +
+  local JSON (a DB/durable checkpointer stand-in).
+
+## Limitations & known gaps
+
+- **Execution is simulated** — approving does not send a real email or update a
+  real ATS; it logs a structured execution report.
+- **In-memory checkpointer / local JSON** — sessions and artifacts do not survive
+  a process restart (by design for the MVP).
+- **UI-entered LLM keys are in-memory only** — they reset on restart; use `.env` /
+  `-e VAR` for persistence.
+- **Cloud reasoning latency** — a full run makes several sequential LLM calls and
+  can take 1–3 minutes on a slow model; the UI shows a live progress tracker, and
+  Mock mode is instant.
+- **Single implemented agent** — the other domain agents are `501` stubs proving
+  the plug-in seam, not implementations.
+- Azure `response_format: json_object` is requested; if a deployment/api-version
+  rejects it, the retry-with-feedback + deterministic fallback still cover it.
+
+## Future improvements
+
+- Real Layer 1 (Meeting Intelligence) and real enterprise integrations behind the
+  same adapter interfaces.
+- Durable persistence (DB + persistent checkpointer) and an event bus in place of
+  the File Watcher.
+- Real Microsoft Teams surface instead of the Gradio simulation.
+- Additional domain agents (Engineering, Sales, Customer Success, Exec-Ops) on the
+  existing router seam.
+- AuthN/Z, per-tenant isolation, and a full audit trail.
+- Richer evals: scored rubrics on the recommendation quality, not just structural
+  golden tests.
+
+## How this was built (AI-tool workflow)
+
+Built with an **architecture-first, plan-then-implement** loop using Claude Code
+as the implementation agent, gated by human review at every phase. See
+**[AGENT_WORKFLOW.md](AGENT_WORKFLOW.md)** for tools used, what was AI-generated
+vs. manually steered, where the tools failed, and a step-by-step audit guide;
+[`docs/best_interaction_artifact.md`](docs/best_interaction_artifact.md) is one
+redacted steering session that produced a real feature.
